@@ -1,0 +1,113 @@
+:root {
+    --primary: #4caf50;
+    --primary-light: #e8f5e9;
+    --bg-color: #f4f4f5;
+    --text-main: #333;
+    --text-muted: #777;
+    --blue: #2196f3;
+    --orange: #ff9800;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+body { background-color: var(--bg-color); color: var(--text-main); }
+
+/* View Management */
+.view { display: none; min-height: 100vh; padding-bottom: 20px; }
+.view.active { display: block; }
+.hidden { display: none !important; }
+
+/* Headers */
+header { background: var(--primary); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+.container { padding: 15px; }
+
+/* Login Screen specific */
+.login-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+.logo { margin-bottom: 10px; }
+h1 { font-size: 28px; margin-bottom: 5px; }
+.subtitle { color: var(--text-muted); margin-bottom: 30px; }
+
+/* Cards & Inputs */
+.card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: 100%; max-width: 400px; margin-bottom: 15px; }
+.input-group { display: flex; align-items: center; background: #f9f9f9; border-radius: 8px; margin-bottom: 15px; padding: 10px 15px; border: 1px solid #eee; }
+.input-group input { border: none; background: transparent; outline: none; width: 100%; margin-left: 10px; font-size: 16px; }
+.input-full { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+
+/* Buttons */
+.btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.btn.primary { background: var(--primary); color: white; }
+.btn.outline.primary { background: white; color: var(--primary); border: 2px solid var(--primary); }
+.btn-icon { background: none; border: none; font-size: 20px; color: white; cursor: pointer; }
+.status-btn { padding: 5px 10px; border: none; border-radius: 5px; color: white; cursor: pointer; font-size: 12px; margin-right: 5px; }
+.status-btn.new { background: var(--blue); }
+.status-btn.process { background: var(--orange); }
+.status-btn.resolved { background: var(--primary); }
+
+/* Info Box */
+.info-box { background: #e3f2fd; color: #1976d2; padding: 15px; border-radius: 8px; display: flex; align-items: flex-start; margin-top: 20px; font-size: 14px; }
+.info-box .icon { margin-right: 10px; }
+
+/* Admin Stats */
+.stats-container { display: flex; gap: 10px; padding: 15px; background: var(--primary); }
+.stat-box { flex: 1; padding: 20px 10px; border-radius: 12px; text-align: center; color: white; }
+.stat-box.blue { background: var(--blue); }
+.stat-box.orange { background: var(--orange); }
+.stat-box.green { background: var(--primary-light); color: var(--primary); }
+
+/* Issue & Code List Items */
+.list-item { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.list-item-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+.badge { padding: 4px 8px; border-radius: 20px; font-size: 12px; color: white; }
+.badge.new { background: var(--blue); }
+.badge.process { background: var(--orange); }
+.badge.resolved { background: var(--primary); }
+.item-img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+.admin-section { margin-top: 20px; }
+/* This centers EVERYTHING inside the main app views */
+.container { 
+    padding: 20px; 
+    max-width: 500px; /* Reduced width for a cleaner "app" look */
+    margin: 0 auto !important; /* Forces centering on both User and Admin pages */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Forces the form and the list to take up the full width of the 500px container */
+.card, #villager-issues-list, #admin-issues-list, .admin-section {
+    width: 100%;
+}
+
+/* Adjusts the Issue Tiles for a more compact look */
+.list-item { 
+    background: white; 
+    padding: 12px 16px; 
+    border-radius: 12px; 
+    margin-bottom: 12px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+    border: 1px solid #efefef;
+    width: 100%; /* Ensures tile doesn't stretch past container */
+    box-sizing: border-box;
+}
+
+/* Makes sure the images inside the tiles are not massive */
+.item-img { 
+    display: block;
+    max-width: 100%; 
+    max-height: 200px; /* Smaller height for tiles */
+    width: auto;
+    margin: 10px auto; 
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+/* Fixes headers and subtitles within the tiles */
+.list-item-header strong {
+    font-size: 15px;
+    color: #333;
+}
+
+.list-item p {
+    font-size: 13px;
+    line-height: 1.4;
+    margin: 8px 0;
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>E-Panchayat</title>
+    <link rel="manifest" href="./manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="login-view" class="view active">
+        <div class="login-container">
+            <div class="logo">
+                <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </div>
+            <h1>E-Panchayat</h1>
+            <p class="subtitle">Your Village, Your Voice</p>
+            
+            <div class="card">
+                <div class="input-group">
+                    <span class="icon">📞</span>
+                    <input type="text" id="login-mobile" placeholder="Mobile Number">
+                </div>
+                <div class="input-group">
+                    <span class="icon">🔑</span>
+                    <input type="password" id="login-code" placeholder="Access Code">
+                </div>
+                <button class="btn primary" onclick="login()">Login</button>
+                <div class="info-box">
+                    <span class="icon">ℹ️</span>
+                    <p>Contact your Panchayat admin to get your access code.</p>
+                </div>
+            </div>
+            <p style="text-align:center; font-size:12px; color:#888; margin-top:20px;">
+                <b>Copyright © 2026 E-Panchayat. All rights reserved.</b>
+            </p>
+        </div>
+    </div>
+
+    <div id="villager-view" class="view">
+        <header>
+            <h2>My Dashboard</h2>
+            <button class="btn-icon" onclick="logout()">➜]</button>
+        </header>
+        <div class="container">
+            <h3>Report New Issue</h3>
+            <div class="card">
+                <select id="issue-category" class="input-full">
+                    <option value="" disabled selected>Select Category</option>
+                    <option value="Water Supply">Water Supply</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Roads">Roads & Infrastructure</option>
+                    <option value="Sanitation">Sanitation</option>
+                    <option value="Other">Other</option>
+                </select>
+                <textarea id="issue-desc" class="input-full" rows="3" placeholder="Describe the issue..."></textarea>
+                <input type="file" id="issue-img" class="input-full" accept="image/*">
+                <button class="btn primary" onclick="submitIssue()">Submit Issue</button>
+            </div>
+
+            <h3 style="margin-top:20px;">My Past Issues</h3>
+            <div id="villager-issues-list"></div>
+        </div>
+    </div>
+
+    <div id="admin-view" class="view">
+        <header>
+            <h2>Admin Dashboard</h2>
+            <button class="btn-icon" onclick="logout()">➜]</button>
+        </header>
+        
+        <div class="stats-container">
+            <div class="stat-box blue">
+                <h2 id="stat-new">0</h2>
+                <p>New</p>
+            </div>
+            <div class="stat-box orange">
+                <h2 id="stat-process">0</h2>
+                <p>In Process</p>
+            </div>
+            <div class="stat-box green">
+                <h2 id="stat-resolved">0</h2>
+                <p>Resolved</p>
+            </div>
+        </div>
+
+        <div class="container">
+            <button class="btn outline primary" onclick="toggleAdminSection('generate-code-section')">🔑 Generate Access Code</button>
+            <button class="btn outline primary" onclick="toggleAdminSection('admin-issues-section')" style="margin-top:10px;">📋 View All Issues</button>
+
+            <div id="generate-code-section" class="admin-section hidden">
+                <h3>New Access Code</h3>
+                <div class="card">
+                    <input type="text" id="new-villager-name" class="input-full" placeholder="Villager Name *">
+                    <input type="text" id="new-villager-mobile" class="input-full" placeholder="10-digit mobile number *">
+                    <button class="btn primary" onclick="generateCode()">🔑 Generate Code</button>
+                </div>
+                <h3>Generated Codes</h3>
+                <div id="generated-codes-list"></div>
+            </div>
+
+            <div id="admin-issues-section" class="admin-section active">
+                <h3>All Issues</h3>
+                <div id="admin-issues-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
