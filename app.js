@@ -79,41 +79,45 @@ function submitIssue() {
         return;
     }
 
-    // Function to resize and upload
-    const processAndUpload = async (base64Str) => {
+    // Function to handle the final upload to Firebase
+    const uploadToFirebase = async (base64Data) => {
         try {
             await db.collection('issues').add({
                 villagerName: currentUser.name,
                 villagerMobile: currentUser.mobile,
                 category: category,
                 desc: desc,
-                image: base64Str, // This will now be a smaller version
+                image: base64Data, // This is the compressed string
                 status: 'new',
                 timestamp: Date.now(),
                 date: new Date().toLocaleDateString()
             });
             
-            alert('Issue Submitted successfully!');
+            alert('Issue submitted successfully!');
+            // Reset form
             document.getElementById('issue-category').value = '';
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
             renderVillagerIssues();
         } catch (error) {
-            console.error("Error adding document: ", error);
-            alert("Upload failed. Try a smaller photo or check your connection.");
+            console.error("Firebase Error:", error);
+            alert("Database error. Please check your internet.");
         }
     };
 
-    if (fileInput.files.length > 0) {
+    // If there is a file, compress it first
+    if (fileInput.files && fileInput.files[0]) {
+        alert("Processing image... please wait a second.");
         const reader = new FileReader();
         reader.readAsDataURL(fileInput.files[0]);
+        
         reader.onload = (event) => {
             const img = new Image();
             img.src = event.target.result;
+            
             img.onload = () => {
-                // --- IMAGE COMPRESSION LOGIC ---
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800; // Limit width to 800px
+                const MAX_WIDTH = 600; // Even smaller for better compatibility
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
@@ -121,16 +125,18 @@ function submitIssue() {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-                // Convert to compressed JPEG (0.7 is 70% quality)
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                processAndUpload(compressedBase64);
+                // Convert to compressed JPEG
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.6); // 60% quality
+                
+                // NOW upload
+                uploadToFirebase(compressedBase64);
             };
         };
     } else {
-        processAndUpload(null);
+        // No image? Just upload text
+        uploadToFirebase(null);
     }
 }
-
 async function renderVillagerIssues() {
     const snapshot = await db.collection('issues').where('villagerMobile', '==', currentUser.mobile).get();
     let issues = snapshot.docs.map(doc => doc.data());
