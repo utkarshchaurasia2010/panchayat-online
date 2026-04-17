@@ -201,7 +201,7 @@ async function renderGeneratedCodes() {
                     ${u.code}
                 </div>
                 <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;" title="Delete Code">
-                    🗑️
+                    🗑
                 </button>
             </div>
         </div>
@@ -221,6 +221,7 @@ async function deleteCode(docId) {
     }
 }
 
+// --- Updated Admin Dashboard to include Delete Button ---
 async function renderAdminDashboard() {
     const snapshot = await db.collection('issues').get();
     let issues = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -235,7 +236,10 @@ async function renderAdminDashboard() {
         <div class="list-item">
             <div class="list-item-header">
                 <strong>${issue.category}</strong>
-                <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
+                    <button onclick="deleteIssue('${issue.id}')" style="background:none; border:none; cursor:pointer; font-size:16px;" title="Delete Issue">🗑</button>
+                </div>
             </div>
             <p style="font-size: 14px; margin: 5px 0;"><strong>User:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
             <p>${issue.desc}</p>
@@ -249,6 +253,23 @@ async function renderAdminDashboard() {
             </div>
         </div>
     `).join('') || '<p>No issues reported.</p>';
+    
+    renderGeneratedCodes();
+}
+
+// --- New Function to Delete an Issue from Firebase ---
+async function deleteIssue(docId) {
+    if (confirm("Are you sure you want to permanently delete this issue report?")) {
+        try {
+            await db.collection('issues').doc(docId).delete();
+            renderAdminDashboard(); // Refresh the dashboard
+            alert("Issue deleted successfully.");
+        } catch (error) {
+            console.error("Error deleting issue: ", error);
+            alert("Failed to delete issue.");
+        }
+    }
+}
     
     renderGeneratedCodes();
 }
