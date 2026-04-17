@@ -111,3 +111,11 @@ h1 { font-size: 28px; margin-bottom: 5px; }
     line-height: 1.4;
     margin: 8px 0;
 }
+.list-item button {
+    transition: transform 0.2s;
+}
+
+.list-item button:hover {
+    transform: scale(1.2);
+    filter: sepia(1) saturate(5) hue-rotate(-50deg); /* Makes it look slightly reddish on hover */
+}
