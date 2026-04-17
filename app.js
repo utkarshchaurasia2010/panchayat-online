@@ -79,32 +79,55 @@ function submitIssue() {
         return;
     }
 
-    const processSubmission = async (imageBase64) => {
-        // Save to Firebase
-        await db.collection('issues').add({
-            villagerName: currentUser.name,
-            villagerMobile: currentUser.mobile,
-            category: category,
-            desc: desc,
-            image: imageBase64,
-            status: 'new',
-            timestamp: Date.now(),
-            date: new Date().toLocaleDateString()
-        });
-        
-        alert('Issue submitted successfully!');
-        document.getElementById('issue-category').value = '';
-        document.getElementById('issue-desc').value = '';
-        document.getElementById('issue-img').value = '';
-        renderVillagerIssues();
+    // Function to resize and upload
+    const processAndUpload = async (base64Str) => {
+        try {
+            await db.collection('issues').add({
+                villagerName: currentUser.name,
+                villagerMobile: currentUser.mobile,
+                category: category,
+                desc: desc,
+                image: base64Str, // This will now be a smaller version
+                status: 'new',
+                timestamp: Date.now(),
+                date: new Date().toLocaleDateString()
+            });
+            
+            alert('Issue Submitted successfully!');
+            document.getElementById('issue-category').value = '';
+            document.getElementById('issue-desc').value = '';
+            document.getElementById('issue-img').value = '';
+            renderVillagerIssues();
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert("Upload failed. Try a smaller photo or check your connection.");
+        }
     };
 
     if (fileInput.files.length > 0) {
         const reader = new FileReader();
-        reader.onload = (e) => processSubmission(e.target.result);
         reader.readAsDataURL(fileInput.files[0]);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                // --- IMAGE COMPRESSION LOGIC ---
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800; // Limit width to 800px
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                // Convert to compressed JPEG (0.7 is 70% quality)
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                processAndUpload(compressedBase64);
+            };
+        };
     } else {
-        processSubmission(null);
+        processAndUpload(null);
     }
 }
 
