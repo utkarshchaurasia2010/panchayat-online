@@ -5,42 +5,53 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// --- Initialize Database in LocalStorage ---
-const initDB = () => {
-    if (!localStorage.getItem('users')) {
-        localStorage.setItem('users', JSON.stringify([
-            { name: 'Admin', mobile: 'admin', code: 'admin123', role: 'admin' }
-        ]));
-    }
-    if (!localStorage.getItem('issues')) {
-        localStorage.setItem('issues', JSON.stringify([]));
-    }
+// --- 1. PASTE YOUR FIREBASE CONFIG HERE ---
+const firebaseConfig = {
+  apiKey: "AIzaSyAUkGblKHSz1Ycx7VA93DVJ_P3J6tAUMVQ",
+  authDomain: "e-panchayat-a32cb.firebaseapp.com",
+  projectId: "e-panchayat-a32cb",
+  storageBucket: "e-panchayat-a32cb.firebasestorage.app",
+  messagingSenderId: "996175917140",
+  appId: "1:996175917140:web:798c382e7807ccfb113dc1",
+  measurementId: "G-E2YFVMD57C"
 };
-initDB();
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
 let currentUser = null;
 
+// --- Initialize Database (Create Admin if missing) ---
+async function initDB() {
+    const adminRef = db.collection('users').doc('admin');
+    const doc = await adminRef.get();
+    if (!doc.exists) {
+        await adminRef.set({ name: 'Admin', mobile: 'admin', code: 'admin123', role: 'admin' });
+    }
+}
+initDB();
+
 // --- Helper Functions ---
-const getDB = (key) => JSON.parse(localStorage.getItem(key));
-const setDB = (key, data) => localStorage.setItem(key, JSON.stringify(data));
 const switchView = (viewId) => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById(viewId).classList.add('active');
 };
 
 // --- Authentication ---
-function login() {
+async function login() {
     const mobile = document.getElementById('login-mobile').value.trim();
     const code = document.getElementById('login-code').value.trim();
-    const users = getDB('users');
     
-    const user = users.find(u => u.mobile === mobile && u.code === code);
+    // Search Firebase for user
+    const snapshot = await db.collection('users').where('mobile', '==', mobile).where('code', '==', code).get();
     
-    if (user) {
-        currentUser = user;
+    if (!snapshot.empty) {
+        currentUser = snapshot.docs[0].data();
         document.getElementById('login-mobile').value = '';
         document.getElementById('login-code').value = '';
-        if (user.role === 'admin') {
+        
+        if (currentUser.role === 'admin') {
             switchView('admin-view');
             renderAdminDashboard();
         } else {
@@ -68,49 +79,48 @@ function submitIssue() {
         return;
     }
 
-    const processSubmission = (imageBase64) => {
-        const issues = getDB('issues');
-        issues.push({
-            id: Date.now(),
+    const processSubmission = async (imageBase64) => {
+        // Save to Firebase
+        await db.collection('issues').add({
             villagerName: currentUser.name,
             villagerMobile: currentUser.mobile,
-            category,
-            desc,
+            category: category,
+            desc: desc,
             image: imageBase64,
-            status: 'new', // new, process, resolved
+            status: 'new',
+            timestamp: Date.now(),
             date: new Date().toLocaleDateString()
         });
-        setDB('issues', issues);
-        alert('Issue submitted successfully!');
         
-        // Reset form
+        alert('Issue submitted successfully!');
         document.getElementById('issue-category').value = '';
         document.getElementById('issue-desc').value = '';
         document.getElementById('issue-img').value = '';
-        
         renderVillagerIssues();
     };
 
     if (fileInput.files.length > 0) {
         const reader = new FileReader();
         reader.onload = (e) => processSubmission(e.target.result);
-        reader.readAsDataURL(fileInput.files[0]); // Convert image to Base64
+        reader.readAsDataURL(fileInput.files[0]);
     } else {
         processSubmission(null);
     }
 }
 
-function renderVillagerIssues() {
-    const issues = getDB('issues').filter(i => i.villagerMobile === currentUser.mobile).reverse();
+async function renderVillagerIssues() {
+    const snapshot = await db.collection('issues').where('villagerMobile', '==', currentUser.mobile).get();
+    let issues = snapshot.docs.map(doc => doc.data());
+    issues.sort((a, b) => b.timestamp - a.timestamp); // Sort newest first
+
     const list = document.getElementById('villager-issues-list');
-    
     list.innerHTML = issues.map(issue => `
         <div class="list-item">
             <div class="list-item-header">
                 <strong>${issue.category}</strong>
                 <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
             </div>
-            <p style="font-size: 14px; color: #555;">${issue.desc}</p>
+            <p>${issue.desc}</p>
             <small style="color: #999;">${issue.date}</small>
             ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
         </div>
@@ -124,7 +134,7 @@ function toggleAdminSection(sectionId) {
     document.getElementById(sectionId).classList.add('active');
 }
 
-function generateCode() {
+async function generateCode() {
     const name = document.getElementById('new-villager-name').value.trim();
     const mobile = document.getElementById('new-villager-mobile').value.trim();
     
@@ -133,29 +143,29 @@ function generateCode() {
         return;
     }
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit random code
-    const users = getDB('users');
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Check if user exists, update code, else create new
-    const existingIndex = users.findIndex(u => u.mobile === mobile);
-    if(existingIndex > -1) {
-        users[existingIndex].code = code;
+    // Check if user exists in Firebase
+    const snapshot = await db.collection('users').where('mobile', '==', mobile).get();
+    
+    if(!snapshot.empty) {
+        const docId = snapshot.docs[0].id;
+        await db.collection('users').doc(docId).update({ code: code, name: name });
     } else {
-        users.push({ name, mobile, code, role: 'villager' });
+        await db.collection('users').add({ name: name, mobile: mobile, code: code, role: 'villager', timestamp: Date.now() });
     }
-    
-    setDB('users', users);
     
     document.getElementById('new-villager-name').value = '';
     document.getElementById('new-villager-mobile').value = '';
-    
     renderGeneratedCodes();
 }
 
-function renderGeneratedCodes() {
-    const users = getDB('users').filter(u => u.role === 'villager').reverse();
+async function renderGeneratedCodes() {
+    const snapshot = await db.collection('users').where('role', '==', 'villager').get();
+    let users = snapshot.docs.map(doc => doc.data());
+    users.sort((a, b) => b.timestamp - a.timestamp);
+
     const list = document.getElementById('generated-codes-list');
-    
     list.innerHTML = users.map(u => `
         <div class="list-item" style="display:flex; justify-content:space-between; align-items:center;">
             <div>
@@ -169,15 +179,15 @@ function renderGeneratedCodes() {
     `).join('') || '<p>No codes generated yet.</p>';
 }
 
-function renderAdminDashboard() {
-    const issues = getDB('issues').reverse();
+async function renderAdminDashboard() {
+    const snapshot = await db.collection('issues').get();
+    let issues = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    issues.sort((a, b) => b.timestamp - a.timestamp);
     
-    // Update Stats
     document.getElementById('stat-new').innerText = issues.filter(i => i.status === 'new').length;
     document.getElementById('stat-process').innerText = issues.filter(i => i.status === 'process').length;
     document.getElementById('stat-resolved').innerText = issues.filter(i => i.status === 'resolved').length;
 
-    // Render Issue List
     const list = document.getElementById('admin-issues-list');
     list.innerHTML = issues.map(issue => `
         <div class="list-item">
@@ -186,14 +196,14 @@ function renderAdminDashboard() {
                 <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
             </div>
             <p style="font-size: 14px; margin: 5px 0;"><strong>User:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
-            <p style="font-size: 14px; color: #555;">${issue.desc}</p>
+            <p>${issue.desc}</p>
             ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
             
             <div style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
                 <span style="font-size:12px; margin-right:10px;">Update Status:</span>
-                <button class="status-btn new" onclick="updateStatus(${issue.id}, 'new')">New</button>
-                <button class="status-btn process" onclick="updateStatus(${issue.id}, 'process')">In Process</button>
-                <button class="status-btn resolved" onclick="updateStatus(${issue.id}, 'resolved')">Resolved</button>
+                <button class="status-btn new" onclick="updateStatus('${issue.id}', 'new')">New</button>
+                <button class="status-btn process" onclick="updateStatus('${issue.id}', 'process')">In Process</button>
+                <button class="status-btn resolved" onclick="updateStatus('${issue.id}', 'resolved')">Resolved</button>
             </div>
         </div>
     `).join('') || '<p>No issues reported.</p>';
@@ -201,12 +211,7 @@ function renderAdminDashboard() {
     renderGeneratedCodes();
 }
 
-function updateStatus(issueId, newStatus) {
-    const issues = getDB('issues');
-    const issueIndex = issues.findIndex(i => i.id === issueId);
-    if(issueIndex > -1) {
-        issues[issueIndex].status = newStatus;
-        setDB('issues', issues);
-        renderAdminDashboard();
-    }
+async function updateStatus(issueId, newStatus) {
+    await db.collection('issues').doc(issueId).update({ status: newStatus });
+    renderAdminDashboard();
 }
