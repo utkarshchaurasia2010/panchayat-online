@@ -183,9 +183,10 @@ async function generateCode() {
     renderGeneratedCodes();
 }
 
+// --- Updated Admin Function to show a Delete Button ---
 async function renderGeneratedCodes() {
     const snapshot = await db.collection('users').where('role', '==', 'villager').get();
-    let users = snapshot.docs.map(doc => doc.data());
+    let users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     users.sort((a, b) => b.timestamp - a.timestamp);
 
     const list = document.getElementById('generated-codes-list');
@@ -195,11 +196,29 @@ async function renderGeneratedCodes() {
                 <strong>${u.name}</strong><br>
                 <small>${u.mobile}</small>
             </div>
-            <div style="background:var(--primary); color:white; padding:8px 15px; border-radius:8px; font-weight:bold; letter-spacing:2px;">
-                ${u.code}
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="background:var(--primary); color:white; padding:8px 15px; border-radius:8px; font-weight:bold; letter-spacing:2px;">
+                    ${u.code}
+                </div>
+                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;" title="Delete Code">
+                    🗑️
+                </button>
             </div>
         </div>
     `).join('') || '<p>No codes generated yet.</p>';
+}
+
+// --- New Function to Delete Code from Firebase ---
+async function deleteCode(docId) {
+    if (confirm("Are you sure you want to delete this access code? The villager will no longer be able to login.")) {
+        try {
+            await db.collection('users').doc(docId).delete();
+            renderGeneratedCodes(); // Refresh the list
+        } catch (error) {
+            console.error("Error deleting code: ", error);
+            alert("Failed to delete. Check your connection.");
+        }
+    }
 }
 
 async function renderAdminDashboard() {
