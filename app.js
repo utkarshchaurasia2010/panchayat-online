@@ -201,7 +201,7 @@ async function renderGeneratedCodes() {
                     ${u.code}
                 </div>
                 <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;" title="Delete Code">
-                    🗑
+                    🗑️
                 </button>
             </div>
         </div>
@@ -238,7 +238,7 @@ async function renderAdminDashboard() {
                 <strong>${issue.category}</strong>
                 <div style="display:flex; align-items:center; gap:10px;">
                     <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
-                    <button onclick="deleteIssue('${issue.id}')" style="background:none; border:none; cursor:pointer; font-size:16px;" title="Delete Issue">🗑</button>
+                    <button onclick="deleteIssue('${issue.id}')" style="background:none; border:none; cursor:pointer; font-size:16px;" title="Delete Issue">🗑️</button>
                 </div>
             </div>
             <p style="font-size: 14px; margin: 5px 0;"><strong>User:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
