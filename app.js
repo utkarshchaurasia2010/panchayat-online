@@ -20,7 +20,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let currentUser = null;
-let currentCoordinates = null; // Holds GPS data
 
 // --- Helper Functions ---
 const switchView = (viewId) => {
