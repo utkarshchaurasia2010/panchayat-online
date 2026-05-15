@@ -81,17 +81,20 @@ function submitIssue() {
             category: category,
             desc: desc,
             image: base64Data,
-            location: currentCoords, // <--- Add this line
+            location: currentCoordinates, // <--- ADD THIS LINE
             status: 'new',
             timestamp: Date.now(),
             date: new Date().toLocaleDateString()
         });
         
         alert('Issue submitted successfully!');
-        // Reset location after submission
-        currentCoords = null;
-        document.getElementById('loc-btn').innerText = "📍 Get My Location";
-        document.getElementById('location-display').innerText = "";
+        
+        // RESET LOCATION BUTTON AFTER SUBMISSION
+        currentCoordinates = null;
+        document.getElementById('geo-btn').innerText = "📍 Get Current Location";
+        if(document.getElementById('location-status')) document.getElementById('location-status').innerText = "Location not attached";
+        
+        // ... rest of your reset code
             document.getElementById('issue-category').value = '';
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
@@ -252,29 +255,34 @@ async function deleteIssue(docId) {
             console.error("Delete issue error:", error);
             alert("Failed to delete issue.");
         }
-        function getLocation() {
-    const locBtn = document.getElementById('loc-btn');
-    const locDisplay = document.getElementById('location-display');
+        let currentCoordinates = null; // Global variable to hold location
+
+function getLocation() {
+    const status = document.getElementById('location-status');
+    const btn = document.getElementById('geo-btn');
+
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+    }
+
+    btn.innerText = "🛰️ Locating...";
     
-    if (navigator.geolocation) {
-        locBtn.innerText = "🛰️ Fetching...";
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                currentCoords = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                locBtn.innerText = "✅ Location Captured";
-                locDisplay.innerText = `Lat: ${currentCoords.lat.toFixed(4)}, Lng: ${currentCoords.lng.toFixed(4)}`;
-            },
-            (error) => {
-                alert("Error getting location. Please enable GPS.");
-                locBtn.innerText = "📍 Get My Location";
-            }
-        );
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
-}
-    }
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            currentCoordinates = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            btn.innerText = "✅ Location Captured";
+            if(status) status.innerText = `Coordinates: ${currentCoordinates.lat.toFixed(4)}, ${currentCoordinates.lng.toFixed(4)}`;
+        },
+        (error) => {
+            console.error(error);
+            btn.innerText = "❌ Location Failed";
+            if(status) status.innerText = "Please enable GPS and try again.";
+            alert("Location error: " + error.message);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
 }
