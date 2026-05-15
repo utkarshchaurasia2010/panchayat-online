@@ -68,7 +68,7 @@ function submitIssue() {
     const desc = document.getElementById('issue-desc').value;
     const fileInput = document.getElementById('issue-img');
 
-    if (!category || !desc !img |) {
+    if (!category || !desc !img | {
         alert('Please fill out all fields.');
         return;
     }
