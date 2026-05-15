@@ -4,16 +4,15 @@ if ('serviceWorker' in navigator) {
         console.log('Service Worker Registered');
     });
 }
-let currentCoords = null;
-// --- 1. PASTE YOUR FIREBASE CONFIG HERE ---
+
+// --- 1. PASTE YOUR ACTUAL FIREBASE CONFIG KEYS HERE ---
 const firebaseConfig = {
     apiKey: "AIzaSyAUkGblKHSz1Ycx7VA93DVJ_P3J6tAUMVQ",
-  authDomain: "e-panchayat-a32cb.firebaseapp.com",
-  projectId: "e-panchayat-a32cb",
-  storageBucket: "e-panchayat-a32cb.firebasestorage.app",
-  messagingSenderId: "996175917140",
-  appId: "1:996175917140:web:798c382e7807ccfb113dc1",
-  measurementId: "G-E2YFVMD57C"
+    authDomain: "e-panchayat-a32cb.firebaseapp.com",
+    projectId: "e-panchayat-a32cb",
+    storageBucket: "e-panchayat-a32cb.firebasestorage.app",
+    messagingSenderId: "996175917140",
+    appId: "1:996175917140:web:798c382e7807ccfb113dc1"
 };
 
 // Initialize Firebase
@@ -21,6 +20,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let currentUser = null;
+let currentCoordinates = null; // Holds GPS data
 
 // --- Helper Functions ---
 const switchView = (viewId) => {
@@ -38,9 +38,6 @@ async function login() {
         
         if (!snapshot.empty) {
             currentUser = snapshot.docs[0].data();
-            document.getElementById('login-mobile').value = '';
-            document.getElementById('login-code').value = '';
-            
             if (currentUser.role === 'admin') {
                 switchView('admin-view');
                 renderAdminDashboard();
@@ -53,7 +50,7 @@ async function login() {
         }
     } catch (error) {
         console.error("Login Error:", error);
-        alert("Login failed. Check connection.");
+        alert("Login failed. Check your internet.");
     }
 }
 
@@ -62,61 +59,85 @@ function logout() {
     switchView('login-view');
 }
 
+// --- Geolocation Function ---
+function getLocation() {
+    const status = document.getElementById('location-status');
+    const btn = document.getElementById('geo-btn');
+
+    if (!navigator.geolocation) {
+        alert("Geolocation not supported by this browser.");
+        return;
+    }
+
+    btn.innerText = "🛰️ Locating...";
+    
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            currentCoordinates = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            btn.innerText = "✅ Location Captured";
+            if(status) status.innerText = `Fixed: ${currentCoordinates.lat.toFixed(4)}, ${currentCoordinates.lng.toFixed(4)}`;
+        },
+        (error) => {
+            btn.innerText = "📍 Get My Current Location";
+            alert("Error: Please enable GPS/Location in your settings.");
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+    );
+}
+
 // --- Villager Functions ---
 function submitIssue() {
     const category = document.getElementById('issue-category').value;
     const desc = document.getElementById('issue-desc').value;
     const fileInput = document.getElementById('issue-img');
 
-    if (!category || !desc ) {
+    if (!category || !desc) {
         alert('Please fill out all fields.');
         return;
     }
 
     const uploadToFirebase = async (base64Data) => {
-    try {
-        await db.collection('issues').add({
-            villagerName: currentUser.name,
-            villagerMobile: currentUser.mobile,
-            category: category,
-            desc: desc,
-            image: base64Data,
-            location: currentCoordinates, // <--- ADD THIS LINE
-            status: 'new',
-            timestamp: Date.now(),
-            date: new Date().toLocaleDateString()
-        });
-        
-        alert('Issue submitted successfully!');
-        
-        // RESET LOCATION BUTTON AFTER SUBMISSION
-        currentCoordinates = null;
-        document.getElementById('geo-btn').innerText = "📍 Get Current Location";
-        if(document.getElementById('location-status')) document.getElementById('location-status').innerText = "Location not attached";
-        
-        // ... rest of your reset code
+        try {
+            await db.collection('issues').add({
+                villagerName: currentUser.name,
+                villagerMobile: currentUser.mobile,
+                category: category,
+                desc: desc,
+                image: base64Data,
+                location: currentCoordinates,
+                status: 'new',
+                timestamp: Date.now(),
+                date: new Date().toLocaleDateString()
+            });
+            
+            alert('Issue submitted successfully!');
             document.getElementById('issue-category').value = '';
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
+            currentCoordinates = null; 
+            document.getElementById('geo-btn').innerText = "📍 Get My Current Location";
+            if(document.getElementById('location-status')) document.getElementById('location-status').innerText = "";
             renderVillagerIssues();
         } catch (error) {
-            console.error("Upload Error:", error);
-            alert("Submission Failed.");
+            alert("Upload failed.");
         }
     };
 
     if (fileInput.files && fileInput.files[0]) {
         const reader = new FileReader();
         reader.readAsDataURL(fileInput.files[0]);
-        reader.onload = (event) => {
+        reader.onload = (e) => {
             const img = new Image();
-            img.src = event.target.result;
+            img.src = e.target.result;
             img.onload = () => {
                 const canvas = document.createElement('canvas');
                 const MAX_WIDTH = 600;
-                const scaleSize = MAX_WIDTH / img.width;
+                const scale = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
+                canvas.height = img.height * scale;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 uploadToFirebase(canvas.toDataURL('image/jpeg', 0.6));
@@ -131,7 +152,6 @@ async function renderVillagerIssues() {
     const snapshot = await db.collection('issues').where('villagerMobile', '==', currentUser.mobile).get();
     let issues = snapshot.docs.map(doc => doc.data());
     issues.sort((a, b) => b.timestamp - a.timestamp);
-
     const list = document.getElementById('villager-issues-list');
     list.innerHTML = issues.map(issue => `
         <div class="list-item">
@@ -140,57 +160,42 @@ async function renderVillagerIssues() {
                 <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
             </div>
             <p>${issue.desc}</p>
-            <small style="color: #999;">${issue.date}</small>
             ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
         </div>
-    `).join('') || '<p>No issues reported yet.</p>';
+    `).join('') || '<p>No issues reported.</p>';
 }
 
 // --- Admin Functions ---
 function toggleAdminSection(sectionId) {
     document.querySelectorAll('.admin-section').forEach(s => s.classList.add('hidden'));
     document.getElementById(sectionId).classList.remove('hidden');
-    document.getElementById(sectionId).classList.add('active');
 }
 
 async function generateCode() {
     const name = document.getElementById('new-villager-name').value.trim();
     const mobile = document.getElementById('new-villager-mobile').value.trim();
-    if (!name || mobile.length < 10) {
-        alert('Enter valid name and 10-digit mobile.');
-        return;
-    }
+    if (!name || mobile.length < 10) return alert('Enter valid details.');
+    
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const snapshot = await db.collection('users').where('mobile', '==', mobile).get();
-    if(!snapshot.empty) {
-        await db.collection('users').doc(snapshot.docs[0].id).update({ code: code, name: name });
-    } else {
-        await db.collection('users').add({ name, mobile, code, role: 'villager', timestamp: Date.now() });
-    }
-    document.getElementById('new-villager-name').value = '';
-    document.getElementById('new-villager-mobile').value = '';
+    await db.collection('users').add({ name, mobile, code, role: 'villager', timestamp: Date.now() });
     renderGeneratedCodes();
 }
 
 async function renderGeneratedCodes() {
     const snapshot = await db.collection('users').where('role', '==', 'villager').get();
     let users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    users.sort((a, b) => b.timestamp - a.timestamp);
     const list = document.getElementById('generated-codes-list');
     list.innerHTML = users.map(u => `
-        <div class="list-item" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="list-item" style="display:flex; justify-content:space-between;">
             <div><strong>${u.name}</strong><br><small>${u.mobile}</small></div>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="background:var(--primary); color:white; padding:8px 15px; border-radius:8px; font-weight:bold;">${u.code}</div>
-                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
-            </div>
+            <button onclick="deleteCode('${u.id}')">🗑️</button>
         </div>
-    `).join('') || '<p>No codes generated yet.</p>';
+    `).join('');
 }
 
-async function deleteCode(docId) {
-    if (confirm("Delete this access code?")) {
-        await db.collection('users').doc(docId).delete();
+async function deleteCode(id) {
+    if (confirm("Delete user?")) {
+        await db.collection('users').doc(id).delete();
         renderGeneratedCodes();
     }
 }
@@ -198,91 +203,33 @@ async function deleteCode(docId) {
 async function renderAdminDashboard() {
     const snapshot = await db.collection('issues').get();
     let issues = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    issues.sort((a, b) => b.timestamp - a.timestamp);
-    
-    document.getElementById('stat-new').innerText = issues.filter(i => i.status === 'new').length;
-    document.getElementById('stat-process').innerText = issues.filter(i => i.status === 'process').length;
-    document.getElementById('stat-resolved').innerText = issues.filter(i => i.status === 'resolved').length;
-
     const list = document.getElementById('admin-issues-list');
     list.innerHTML = issues.map(issue => `
         <div class="list-item">
             <div class="list-item-header">
                 <strong>${issue.category}</strong>
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
-                    <button onclick="deleteIssue('${issue.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
-                </div>
+                <button onclick="deleteIssue('${issue.id}')">🗑️</button>
             </div>
-            <p style="font-size: 14px; margin: 5px 0;"><strong>User:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
             <p>${issue.desc}</p>
-            ${issue.location ? `
-    <p style="margin-top:5px;">
-        <a href="https://www.google.com/maps?q=${issue.location.lat},${issue.location.lng}" target="_blank" style="color: #2196f3; text-decoration: none; font-weight: bold; font-size: 13px;">
-            🗺️ View exact location on Google Maps
-        </a>
-    </p>
-` : ''}
+            ${issue.location ? `<a href="https://www.google.com/maps?q=${issue.location.lat},${issue.location.lng}" target="_blank">🗺️ View Map</a>` : ''}
             ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
-            <div style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
-                <span style="font-size:12px; margin-right:10px;">Update Status:</span>
-                <button class="status-btn new" onclick="updateStatus('${issue.id}', 'new')">New</button>
-                <button class="status-btn process" onclick="updateStatus('${issue.id}', 'process')">In Process</button>
-                <button class="status-btn resolved" onclick="updateStatus('${issue.id}', 'resolved')">Resolved</button>
+            <div>
+                <button onclick="updateStatus('${issue.id}', 'process')">Process</button>
+                <button onclick="updateStatus('${issue.id}', 'resolved')">Resolved</button>
             </div>
         </div>
-    `).join('') || '<p>No issues reported.</p>';
+    `).join('');
     renderGeneratedCodes();
 }
 
-async function updateStatus(issueId, newStatus) {
-    try {
-        await db.collection('issues').doc(issueId).update({ status: newStatus });
-        renderAdminDashboard();
-    } catch (error) {
-        console.error("Update error:", error);
-    }
+async function updateStatus(id, status) {
+    await db.collection('issues').doc(id).update({ status });
+    renderAdminDashboard();
 }
 
-// --- NEW FUNCTION: Delete Issue from Firebase ---
-async function deleteIssue(docId) {
-    if (confirm("Are you sure you want to permanently delete this issue report?")) {
-        try {
-            await db.collection('issues').doc(docId).delete();
-            renderAdminDashboard(); // Refresh UI
-            alert("Issue deleted.");
-        } catch (error) {
-            console.error("Delete issue error:", error);
-            alert("Failed to delete issue.");
-        }
-        let currentCoordinates = null; // Global variable to hold location
-
-function getLocation() {
-    const status = document.getElementById('location-status');
-    const btn = document.getElementById('geo-btn');
-
-    if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
-        return;
+async function deleteIssue(id) {
+    if (confirm("Delete issue?")) {
+        await db.collection('issues').doc(id).delete();
+        renderAdminDashboard();
     }
-
-    btn.innerText = "🛰️ Locating...";
-    
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            currentCoordinates = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            btn.innerText = "✅ Location Captured";
-            if(status) status.innerText = `Coordinates: ${currentCoordinates.lat.toFixed(4)}, ${currentCoordinates.lng.toFixed(4)}`;
-        },
-        (error) => {
-            console.error(error);
-            btn.innerText = "❌ Location Failed";
-            if(status) status.innerText = "Please enable GPS and try again.";
-            alert("Location error: " + error.message);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
 }
