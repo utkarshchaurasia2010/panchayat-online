@@ -8,11 +8,12 @@ if ('serviceWorker' in navigator) {
 // --- 1. PASTE YOUR ACTUAL FIREBASE CONFIG KEYS HERE ---
 const firebaseConfig = {
     apiKey: "AIzaSyAUkGblKHSz1Ycx7VA93DVJ_P3J6tAUMVQ",
-    authDomain: "e-panchayat-a32cb.firebaseapp.com",
-    projectId: "e-panchayat-a32cb",
-    storageBucket: "e-panchayat-a32cb.firebasestorage.app",
-    messagingSenderId: "996175917140",
-    appId: "1:996175917140:web:798c382e7807ccfb113dc1"
+  authDomain: "e-panchayat-a32cb.firebaseapp.com",
+  projectId: "e-panchayat-a32cb",
+  storageBucket: "e-panchayat-a32cb.firebasestorage.app",
+  messagingSenderId: "996175917140",
+  appId: "1:996175917140:web:798c382e7807ccfb113dc1",
+  measurementId: "G-E2YFVMD57C"
 };
 
 // Initialize Firebase
@@ -58,8 +59,8 @@ function logout() {
     switchView('login-view');
 }
 
-// --- UPDATED SUBMIT FUNCTION ---
-async function submitIssue() {
+// --- Villager Functions ---
+function submitIssue() {
     const category = document.getElementById('issue-category').value;
     const desc = document.getElementById('issue-desc').value;
     const fileInput = document.getElementById('issue-img');
@@ -77,22 +78,18 @@ async function submitIssue() {
                 category: category,
                 desc: desc,
                 image: base64Data,
-                location: currentCoordinates, // This saves the GPS data
                 status: 'new',
                 timestamp: Date.now(),
                 date: new Date().toLocaleDateString()
             });
             
             alert('Issue submitted successfully!');
-            // Reset everything
             document.getElementById('issue-category').value = '';
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
-            currentCoordinates = null; 
             renderVillagerIssues();
         } catch (error) {
-            console.error("Upload error:", error);
-            alert("Submission failed.");
+            alert("Upload failed.");
         }
     };
 
@@ -156,15 +153,18 @@ async function renderGeneratedCodes() {
     let users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     const list = document.getElementById('generated-codes-list');
     list.innerHTML = users.map(u => `
-        <div class="list-item" style="display:flex; justify-content:space-between;">
+        <div class="list-item" style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #eee; padding: 10px 0;">
             <div><strong>${u.name}</strong><br><small>${u.mobile}</small></div>
-            <button onclick="deleteCode('${u.id}')">🗑️</button>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <div style="background:var(--primary); color:white; padding:5px 10px; border-radius:5px;">${u.code}</div>
+                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
+            </div>
         </div>
-    `).join('');
+    `).join('') || '<p>No codes generated yet.</p>';
 }
 
 async function deleteCode(id) {
-    if (confirm("Delete user?")) {
+    if (confirm("Delete this user?")) {
         await db.collection('users').doc(id).delete();
         renderGeneratedCodes();
     }
@@ -173,22 +173,24 @@ async function deleteCode(id) {
 async function renderAdminDashboard() {
     const snapshot = await db.collection('issues').get();
     let issues = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    issues.sort((a, b) => b.timestamp - a.timestamp);
+    
     const list = document.getElementById('admin-issues-list');
     list.innerHTML = issues.map(issue => `
         <div class="list-item">
             <div class="list-item-header">
                 <strong>${issue.category}</strong>
-                <button onclick="deleteIssue('${issue.id}')">🗑️</button>
+                <button onclick="deleteIssue('${issue.id}')" style="background:none; border:none; cursor:pointer;">🗑️</button>
             </div>
+            <p><strong>By:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
             <p>${issue.desc}</p>
-            ${issue.location ? `<a href="https://www.google.com/maps?q=${issue.location.lat},${issue.location.lng}" target="_blank">🗺️ View Map</a>` : ''}
             ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
-            <div>
-                <button onclick="updateStatus('${issue.id}', 'process')">Process</button>
-                <button onclick="updateStatus('${issue.id}', 'resolved')">Resolved</button>
+            <div style="margin-top:10px;">
+                <button class="status-btn" onclick="updateStatus('${issue.id}', 'process')">Mark In Process</button>
+                <button class="status-btn" onclick="updateStatus('${issue.id}', 'resolved')">Mark Resolved</button>
             </div>
         </div>
-    `).join('');
+    `).join('') || '<p>No issues reported.</p>';
     renderGeneratedCodes();
 }
 
@@ -198,7 +200,7 @@ async function updateStatus(id, status) {
 }
 
 async function deleteIssue(id) {
-    if (confirm("Delete issue?")) {
+    if (confirm("Delete this issue?")) {
         await db.collection('issues').doc(id).delete();
         renderAdminDashboard();
     }
