@@ -59,18 +59,19 @@ function logout() {
     switchView('login-view');
 }
 
-// --- Geolocation Function ---
+// --- GEOLOCATION LOGIC ---
+// Make sure this is NOT inside another function
 function getLocation() {
-    const status = document.getElementById('location-status');
     const btn = document.getElementById('geo-btn');
+    const status = document.getElementById('location-status');
 
     if (!navigator.geolocation) {
-        alert("Geolocation not supported by this browser.");
+        alert("Geolocation is not supported by your browser.");
         return;
     }
 
     btn.innerText = "🛰️ Locating...";
-    
+
     navigator.geolocation.getCurrentPosition(
         (position) => {
             currentCoordinates = {
@@ -78,18 +79,20 @@ function getLocation() {
                 lng: position.coords.longitude
             };
             btn.innerText = "✅ Location Captured";
-            if(status) status.innerText = `Fixed: ${currentCoordinates.lat.toFixed(4)}, ${currentCoordinates.lng.toFixed(4)}`;
+            if (status) status.innerText = "Location added to report";
+            console.log("GPS Success:", currentCoordinates);
         },
         (error) => {
+            console.error(error);
             btn.innerText = "📍 Get My Current Location";
-            alert("Error: Please enable GPS/Location in your settings.");
+            alert("Location Error: Please ensure GPS is ON and you allowed permissions.");
         },
-        { enableHighAccuracy: true, timeout: 10 }
+        { enableHighAccuracy: true, timeout: 10000 }
     );
 }
 
-// --- Villager Functions ---
-function submitIssue() {
+// --- UPDATED SUBMIT FUNCTION ---
+async function submitIssue() {
     const category = document.getElementById('issue-category').value;
     const desc = document.getElementById('issue-desc').value;
     const fileInput = document.getElementById('issue-img');
@@ -107,22 +110,23 @@ function submitIssue() {
                 category: category,
                 desc: desc,
                 image: base64Data,
-                location: currentCoordinates,
+                location: currentCoordinates, // This saves the GPS data
                 status: 'new',
                 timestamp: Date.now(),
                 date: new Date().toLocaleDateString()
             });
             
             alert('Issue submitted successfully!');
+            // Reset everything
             document.getElementById('issue-category').value = '';
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
             currentCoordinates = null; 
             document.getElementById('geo-btn').innerText = "📍 Get My Current Location";
-            if(document.getElementById('location-status')) document.getElementById('location-status').innerText = "";
             renderVillagerIssues();
         } catch (error) {
-            alert("Upload failed.");
+            console.error("Upload error:", error);
+            alert("Submission failed.");
         }
     };
 
