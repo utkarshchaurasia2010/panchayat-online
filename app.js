@@ -215,8 +215,7 @@ async function renderAdminDashboard() {
             </div>
             <p style="font-size: 14px; margin: 5px 0;"><strong>User:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
             <p>${issue.desc}</p>
-            // Inside renderAdminDashboard map function, add this after the description <p>:
-${issue.location ? `
+            ${issue.location ? `
     <p style="margin-top:5px;">
         <a href="https://www.google.com/maps?q=${issue.location.lat},${issue.location.lng}" target="_blank" style="color: #2196f3; text-decoration: none; font-weight: bold; font-size: 13px;">
             🗺️ View exact location on Google Maps
