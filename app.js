@@ -74,19 +74,26 @@ function submitIssue() {
     }
 
     const uploadToFirebase = async (base64Data) => {
-        try {
-            await db.collection('issues').add({
-                villagerName: currentUser.name,
-                villagerMobile: currentUser.mobile,
-                category: category,
-                desc: desc,
-                image: base64Data,
-                status: 'new',
-                timestamp: Date.now(),
-                date: new Date().toLocaleDateString()
-            });
-            
-            alert('Issue submitted successfully!');
+    try {
+        await db.collection('issues').add({
+            villagerName: currentUser.name,
+            villagerMobile: currentUser.mobile,
+            category: category,
+            desc: desc,
+            image: base64Data,
+            location: currentCoords, // <--- Add this line
+            status: 'new',
+            timestamp: Date.now(),
+            date: new Date().toLocaleDateString()
+        });
+        
+        alert('Issue submitted successfully!');
+        // Reset location after submission
+        currentCoords = null;
+        document.getElementById('loc-btn').innerText = "📍 Get My Location";
+        document.getElementById('location-display').innerText = "";
+        
+        // ... rest of your existing reset code ...
             document.getElementById('issue-category').value = '';
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
