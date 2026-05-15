@@ -84,7 +84,7 @@ function getLocation() {
             btn.innerText = "📍 Get My Current Location";
             alert("Error: Please enable GPS/Location in your settings.");
         },
-        { enableHighAccuracy: true, timeout: 10000 }
+        { enableHighAccuracy: true, timeout: 10 }
     );
 }
 
