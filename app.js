@@ -68,7 +68,7 @@ function submitIssue() {
     const desc = document.getElementById('issue-desc').value;
     const fileInput = document.getElementById('issue-img');
 
-    if (!category || !desc) {
+    if (!category || !desc !img  ||) {
         alert('Please fill out all fields.');
         return;
     }
@@ -92,15 +92,13 @@ function submitIssue() {
         currentCoords = null;
         document.getElementById('loc-btn').innerText = "📍 Get My Location";
         document.getElementById('location-display').innerText = "";
-        
-        // ... rest of your existing reset code ...
             document.getElementById('issue-category').value = '';
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
             renderVillagerIssues();
         } catch (error) {
             console.error("Upload Error:", error);
-            alert("Submission failed.");
+            alert("Submission Failed.");
         }
     };
 
