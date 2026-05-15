@@ -59,38 +59,6 @@ function logout() {
     switchView('login-view');
 }
 
-// --- GEOLOCATION LOGIC ---
-// Make sure this is NOT inside another function
-function getLocation() {
-    const btn = document.getElementById('geo-btn');
-    const status = document.getElementById('location-status');
-
-    if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
-        return;
-    }
-
-    btn.innerText = "🛰️ Locating...";
-
-    navigator.geolocation.getCurrentPosition(
-        (position) => {
-            currentCoordinates = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            btn.innerText = "✅ Location Captured";
-            if (status) status.innerText = "Location added to report";
-            console.log("GPS Success:", currentCoordinates);
-        },
-        (error) => {
-            console.error(error);
-            btn.innerText = "📍 Get My Current Location";
-            alert("Location Error: Please ensure GPS is ON and you allowed permissions.");
-        },
-        { enableHighAccuracy: true, timeout: 10000 }
-    );
-}
-
 // --- UPDATED SUBMIT FUNCTION ---
 async function submitIssue() {
     const category = document.getElementById('issue-category').value;
@@ -122,7 +90,6 @@ async function submitIssue() {
             document.getElementById('issue-desc').value = '';
             document.getElementById('issue-img').value = '';
             currentCoordinates = null; 
-            document.getElementById('geo-btn').innerText = "📍 Get My Current Location";
             renderVillagerIssues();
         } catch (error) {
             console.error("Upload error:", error);
