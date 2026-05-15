@@ -4,7 +4,7 @@ if ('serviceWorker' in navigator) {
         console.log('Service Worker Registered');
     });
 }
-
+let currentCoords = null;
 // --- 1. PASTE YOUR FIREBASE CONFIG HERE ---
 const firebaseConfig = {
     apiKey: "AIzaSyAUkGblKHSz1Ycx7VA93DVJ_P3J6tAUMVQ",
@@ -240,5 +240,29 @@ async function deleteIssue(docId) {
             console.error("Delete issue error:", error);
             alert("Failed to delete issue.");
         }
+        function getLocation() {
+    const locBtn = document.getElementById('loc-btn');
+    const locDisplay = document.getElementById('location-display');
+    
+    if (navigator.geolocation) {
+        locBtn.innerText = "🛰️ Fetching...";
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                currentCoords = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                locBtn.innerText = "✅ Location Captured";
+                locDisplay.innerText = `Lat: ${currentCoords.lat.toFixed(4)}, Lng: ${currentCoords.lng.toFixed(4)}`;
+            },
+            (error) => {
+                alert("Error getting location. Please enable GPS.");
+                locBtn.innerText = "📍 Get My Location";
+            }
+        );
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
     }
 }
