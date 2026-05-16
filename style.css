@@ -207,46 +207,58 @@ h3 {
 }
 
 /* Updated Code Card to fix overflow */
+/* --- Professional Code Card Fix --- */
+
 .code-card {
     background: white;
-    padding: 16px;
+    /* Added more internal padding for breathing room */
+    padding: 18px 20px; 
     border-radius: 12px;
-    margin-bottom: 15px; /* Space between cards */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); /* Softer shadow */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; 
-    border: 1px solid #efefef;
-    box-sizing: border-box; /* Prevents card from stretching too wide */
+    width: 100%;
+    border: 1px solid #f0f0f0;
+    /* CRITICAL: Ensures padding doesn't push the card out of its container */
+    box-sizing: border-box; 
 }
 
 .code-info {
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Fixes the overflow issue */
-    margin-right: 10px;
+    gap: 4px; /* Space between Name and Number */
 }
 
 .code-info strong {
     font-size: 16px;
-    color: #333;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Adds ... if name is too long */
+    color: #222;
+    letter-spacing: 0.3px;
 }
 
 .code-info span {
     font-size: 13px;
-    color: #777;
-    margin-top: 2px;
+    color: #666;
 }
 
 .code-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 15px; /* More space between Green Badge and Trash Icon */
 }
+
+.badge-code {
+    background: #4caf50;
+    color: white;
+    padding: 8px 16px; /* Larger padding for a pill look */
+    border-radius: 8px;
+    font-weight: 700;
+    font-family: 'Segoe UI', sans-serif;
+    min-width: 80px; /* Keeps codes of different lengths looking consistent */
+    text-align: center;
+}
+
 
 /* Style the green code badge */
 .badge-code {
