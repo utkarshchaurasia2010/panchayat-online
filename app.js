@@ -160,7 +160,7 @@ async function renderGeneratedCodes() {
                 <div class="list-item">
         <span>${issue.desc}</span>
                 <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">
-                <span class="material-symbols-outlined">delete</span>
+                <span class="material-symbols-outlined" style="color: #05ad13;">delete</span>
                 </button>
             </div>
         </div>
