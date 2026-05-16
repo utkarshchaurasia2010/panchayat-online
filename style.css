@@ -170,3 +170,29 @@ h1 { font-size: 28px; margin-bottom: 5px; }
 }
 .icon-mobile { color: #05ad13 !important; }
 .icon-key { color: #05ad13 !important; }
+/* --- Admin Icon Enhancements --- */
+
+/* Align icons inside buttons */
+.btn.outline.primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Adds space between icon and text */
+}
+
+/* Specific styling for the logout icon */
+.btn-icon .material-symbols-outlined {
+    font-size: 24px;
+    color: white; /* Matches your header text */
+    transition: transform 0.2s;
+}
+
+.btn-icon:hover .material-symbols-outlined {
+    transform: scale(1.1);
+}
+
+/* Ensure icons in the admin section don't stretch */
+.admin-section span.material-symbols-outlined {
+    flex-shrink: 0;
+    vertical-align: middle;
+}
