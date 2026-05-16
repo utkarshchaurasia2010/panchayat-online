@@ -157,7 +157,9 @@ async function renderGeneratedCodes() {
             <div><strong>${u.name}</strong><br><small>${u.mobile}</small></div>
             <div style="display:flex; align-items:center; gap:10px;">
                 <div style="background:var(--primary); color:white; padding:5px 10px; border-radius:5px;">${u.code}</div>
-                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">🗑️</button>
+                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">
+                <span class="material-symbols-outlined">delete</span>
+                </button>
             </div>
         </div>
     `).join('') || '<p>No codes generated yet.</p>';
