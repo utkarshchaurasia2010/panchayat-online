@@ -42,24 +42,30 @@
     <div id="villager-view" class="view">
         <header>
             <h2>User Dashboard</h2>
-            <button class="btn-icon" onclick="logout()">➜]</button>
+            <button class="btn-icon" onclick="logout()">
             <span class="material-symbols-outlined">logout</span>
+            </button>
         </header>
         <div class="container">
             <h3>Report New Issue</h3>
             <div class="card">
                 <select id="issue-category" class="input-full">
                     <option value="" disabled selected>Select Category</option>
-                    <option value="Water Supply">Water Supply</option>
+                    <option value="Water Supply">Water Supply>
                     <span class="material-symbols-outlined">water_drop</span>
-                    <option value="Electricity">Electricity</option>
+                    </option>
+                    <option value="Electricity">Electricity>
                     <span class="material-symbols-outlined">electric_bolt</span>
-                    <option value="Roads">Roads & Infrastructure</option>
+                    </option>
+                    <option value="Roads">Roads & Infrastructure>
                     <span class="material-symbols-outlined">road</span>
-                    <option value="Sanitation">Sanitation</option>
+                        </option>
+                    <option value="Sanitation">Sanitation>
                     <span class="material-symbols-outlined">mop</span>
-                    <option value="Other">Other</option>
+                        </option>
+                    <option value="Other">Other>
                     <span class="material-symbols-outlined">other_admission</span>
+                        </option>
                 </select>
                 <textarea id="issue-desc" class="input-full" rows="3" placeholder="Describe the issue..."></textarea>
                 <input type="file" id="issue-img" class="input-full" accept="image/*">
@@ -73,7 +79,9 @@
     <div id="admin-view" class="view">
         <header>
             <h2>Admin Dashboard</h2>
-            <button class="btn-icon" onclick="logout()">➜]</button>
+            <button class="btn-icon" onclick="logout()">
+                <span class="material-symbols-outlined">logout</span>
+            </button>
         </header>
         
         <div class="stats-container">
@@ -92,17 +100,22 @@
         </div>
 
         <div class="container">
-            <button class="btn outline primary" onclick="toggleAdminSection('generate-code-section')">🔑 Generate Access Code</button>
-            <button class="btn outline primary" onclick="toggleAdminSection('admin-issues-section')" style="margin-top:10px;">📋 View All Issues</button>
-
+            <button class="btn outline primary" onclick="toggleAdminSection('generate-code-section')">
+                <span class="material-symbols-outlined">add_circle</span>
+                Generate Access Code
+            </button>
+            <button class="btn outline primary" onclick="toggleAdminSection('admin-issues-section')" style="margin-top:10px;">
+                <span class="material-symbols-outlined">view_array</span>
+                All Issues
+            </button>
             <div id="generate-code-section" class="admin-section hidden">
                 <h3>New Access Code</h3>
                 <div class="card">
-                    <input type="text" id="new-villager-name" class="input-full" placeholder="Villager Name *">
-                    <input type="text" id="new-villager-mobile" class="input-full" placeholder="10-digit mobile number *">
-                    <button class="btn primary" onclick="generateCode()">🔑 Generate Code</button>
+                    <input type="text" id="new-villager-name" class="input-full" placeholder="Villager Name ">
+                    <input type="text" id="new-villager-mobile" class="input-full" placeholder="10-digit mobile number ">
+                    <button class="btn primary" onclick="generateCode()">Generate Code</button>
                 </div>
-                <h3>Generated Codes</h3>
+                <h3> Generated Codes </h3>
                 <div id="generated-codes-list"></div>
             </div>
 
