@@ -196,28 +196,44 @@ h1 { font-size: 28px; margin-bottom: 5px; }
     flex-shrink: 0;
     vertical-align: middle;
 }
-/* Styling for individual generated code cards */
+/* --- UI Spacing & Card Fixes --- */
+
+/* Add space below every subheading */
+h3 {
+    margin-top: 25px;   
+    margin-bottom: 18px; /* Space between heading and the card below */
+    color: #333;
+    width: 100%;
+}
+
+/* Updated Code Card to fix overflow */
 .code-card {
     background: white;
-    padding: 15px;
+    padding: 16px;
     border-radius: 12px;
-    margin-bottom: 12px;
+    margin-bottom: 15px; /* Space between cards */
     box-shadow: 0 2px 8px rgba(0,0,0,0.06);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    width: 100%; /* Forces the card to span the full container width */
+    width: 100%; 
     border: 1px solid #efefef;
+    box-sizing: border-box; /* Prevents card from stretching too wide */
 }
 
 .code-info {
     display: flex;
     flex-direction: column;
+    overflow: hidden; /* Fixes the overflow issue */
+    margin-right: 10px;
 }
 
 .code-info strong {
     font-size: 16px;
     color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adds ... if name is too long */
 }
 
 .code-info span {
