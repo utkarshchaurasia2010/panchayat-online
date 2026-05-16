@@ -119,3 +119,44 @@ h1 { font-size: 28px; margin-bottom: 5px; }
     transform: scale(1.2);
     filter: sepia(1) saturate(5) hue-rotate(-50deg); /* Makes it look slightly reddish on hover */
 }
+/* --- CUSTOM ICON STYLING --- */
+
+/* This ensures the Google Icons align perfectly with your text */
+.material-symbols-outlined {
+  vertical-align: middle;
+  font-size: 22px; /* Adjust size to match your input text */
+  user-select: none;
+}
+
+/* Specific Colors to match your screenshot */
+.icon-mobile { 
+  color: #e91e63; /* Pinkish-red for the phone */
+}
+
+.icon-key { 
+  color: #ffc107; /* Yellow/Gold for the key */
+}
+
+.icon-info { 
+  color: #03a9f4; /* Sky blue for the info box */
+  margin-right: 10px; /* Space between icon and text */
+}
+
+/* Ensure your input containers use Flexbox for alignment */
+.input-group {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  background-color: #fff;
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  margin-left: 10px;
+  flex: 1;
+  font-size: 16px;
+}
