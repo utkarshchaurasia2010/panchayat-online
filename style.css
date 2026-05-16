@@ -119,30 +119,40 @@ h1 { font-size: 28px; margin-bottom: 5px; }
     transform: scale(1.2);
     filter: sepia(1) saturate(5) hue-rotate(-50deg); /* Makes it look slightly reddish on hover */
 }
-<style>
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 20
+/* Container for input + icon */
+.input-group {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa; /* Match your input background */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 15px;
 }
-</style>
-<style>
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 20
+
+.input-group input {
+  border: none;
+  background: transparent;
+  outline: none;
+  margin-left: 10px;
+  flex: 1;
 }
-</style>
-<style>
-.material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 20
+
+/* Specific Icon Colors from your screenshot */
+.icon-mobile { color: #e91e63; } /* Pink/Red for Phone */
+.icon-key { color: #ffc107; }    /* Yellow for Key */
+.icon-info { 
+  color: #03a9f4;                /* Blue for Info */
+  margin-right: 10px;
 }
-</style>
+
+/* Adjusting the Info Box */
+.info-box {
+  display: flex;
+  align-items: center;
+  background-color: #e3f2fd;
+  padding: 12px;
+  border-radius: 8px;
+  color: #1976d2;
+  font-size: 0.9rem;
+}
