@@ -158,7 +158,7 @@ async function renderGeneratedCodes() {
             <div style="display:flex; align-items:center; gap:10px;">
                 <div style="background:var(--primary); color:white; padding:5px 10px; border-radius:5px;">${u.code}</div>
                 <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">
-                <span class="material-symbols-outlined" style="color: #05ad13;">delete</span>
+                <span class="material-symbols-outlined" style="color: #000000;">delete</span>
                 </button>
             </div>
         </div>
@@ -183,7 +183,7 @@ async function renderAdminDashboard() {
             <div class="list-item-header">
                 <strong>${issue.category}</strong>
                 <button onclick="deleteIssue('${issue.id}')" style="background:none; border:none; cursor:pointer;">
-                <span class="material-symbols-outlined" style="color: #05ad13;">delete</span>
+                <span class="material-symbols-outlined" style="color: #000000;">delete</span>
                 </button>
             </div>
             <p><strong>By:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
