@@ -257,36 +257,37 @@ h3 {
     font-weight: bold;
     font-family: monospace;
 }
-/* --- Header Fix for Admin Dashboard --- */
+/* --- Global Header Fix --- */
 
 header {
     background: var(--primary);
     color: white;
-    padding: 15px 20px;
+    padding: 12px 20px; /* Adjusted padding for a cleaner look */
     display: flex;
-    justify-content: space-between; /* Pushes Title to left and Icon to right */
-    align-items: center;            /* Centers them vertically */
+    justify-content: space-between; /* This pushes the title and icon to opposite sides */
+    align-items: center;            /* This centers them vertically */
     width: 100%;
 }
 
 header h2 {
     margin: 0;
-    font-size: 22px; /* Slightly smaller to prevent crowding */
-    white-space: nowrap; /* Keeps 'Admin Dashboard' on one line */
+    font-size: 20px; /* Reduced slightly to prevent crowding on small screens */
+    white-space: nowrap; 
 }
 
+/* Ensure the logout button is centered and styled */
 .btn-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     background: none;
     border: none;
-    padding: 5px;
     cursor: pointer;
+    padding: 5px;
 }
 
 .btn-icon .material-symbols-outlined {
-    font-size: 28px; /* Adjust this size to your preference */
+    font-size: 24px; /* Standard icon size */
     color: white;
-    line-height: 1;  /* Prevents the icon from adding extra height */
+    line-height: 1;
 }
