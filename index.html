@@ -20,16 +20,16 @@
             
             <div class="card">
                 <div class="input-group">
-                    <span class="material-symbols-outlined">call</span>
+                    <span class="material-symbols-outlined icon-mobile">call</span>
                     <input type="text" id="login-mobile" placeholder="Mobile Number">
                 </div>
                 <div class="input-group">
-                    <span class="material-symbols-outlined">key</span>
+                    <span class="material-symbols-outlined icon-key">key</span>
                     <input type="password" id="login-code" placeholder="Access Code">
                 </div>
                 <button class="btn primary" onclick="login()">Login</button>
                 <div class="info-box">
-                    <span class="material-symbols-outlined">info</span>
+                    <span class="material-symbols-outlined icon-info">info</span>
                     <p>Contact your Panchayat admin to get your access code.</p>
                 </div>
             </div>
@@ -43,6 +43,7 @@
         <header>
             <h2>User Dashboard</h2>
             <button class="btn-icon" onclick="logout()">➜]</button>
+            <span class="material-symbols-outlined">logout</span>
         </header>
         <div class="container">
             <h3>Report New Issue</h3>
@@ -50,10 +51,15 @@
                 <select id="issue-category" class="input-full">
                     <option value="" disabled selected>Select Category</option>
                     <option value="Water Supply">Water Supply</option>
+                    <span class="material-symbols-outlined">water_drop</span>
                     <option value="Electricity">Electricity</option>
+                    <span class="material-symbols-outlined">electric_bolt</span>
                     <option value="Roads">Roads & Infrastructure</option>
+                    <span class="material-symbols-outlined">road</span>
                     <option value="Sanitation">Sanitation</option>
+                    <span class="material-symbols-outlined">mop</span>
                     <option value="Other">Other</option>
+                    <span class="material-symbols-outlined">other_admission</span>
                 </select>
                 <textarea id="issue-desc" class="input-full" rows="3" placeholder="Describe the issue..."></textarea>
                 <input type="file" id="issue-img" class="input-full" accept="image/*">
