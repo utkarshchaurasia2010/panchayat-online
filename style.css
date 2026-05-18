@@ -487,20 +487,30 @@ header h2 {
     box-sizing: border-box;
     overflow-x: hidden;
 }
-/* --- Fix for Narrow Issue Cards --- */
+/* --- ULTIMATE WIDTH FIX FOR ADMIN CARDS --- */
 
-/* Force the issues container to span full width and stretch its children */
+/* Force the section and the list container to stretch full width */
+#admin-issues-section, 
 #admin-issues-list {
     width: 100% !important;
-    display: flex;
-    flex-direction: column;
-    align-items: stretch; /* This tells the cards to stretch to the edges */
+    display: block !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
-/* Ensure the cards themselves take up 100% of the stretched space */
+/* Force every single card to stretch from edge to edge */
 .clickable-card {
     width: 100% !important;
+    max-width: 100% !important;
     box-sizing: border-box !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
+    display: block !important;
+}
+
+/* Keep the inside of the card properly spaced */
+.clickable-card .list-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
