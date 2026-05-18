@@ -547,3 +547,23 @@ header h2 {
         margin-bottom: 10px;
     }
 }
+/* --- NOTICE BOARD WIDTH & CARD FIXES --- */
+
+/* Force the notice lists to stretch full width like the issues list */
+#villager-notice-list,
+#admin-notice-list {
+    width: 100% !important;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch !important; /* This stops them from shrinking! */
+}
+
+/* Force the individual notice cards to stretch to the edges */
+#villager-notice-list .code-card-new,
+#admin-notice-list .code-card-new {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
