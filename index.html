@@ -117,26 +117,26 @@
                 All Issues
                 <span class="material-symbols-outlined">arrow_drop_down</span>
             </button>
-            <div id="generate-code-section" class="admin-section hidden">
-    <h3>New Access Code</h3>
-    <div class="card">
+  <div id="generate-code-section" class="admin-section hidden">
+    <div class="card" style="padding: 25px;">
+        <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">New Access Code</h3>
+        
         <div class="input-field-group">
-            <label for="new-villager-name">Villager Name*</label>
-            <input type="text" id="new-villager-name" class="input-full" placeholder="Enter full name">
+            <label for="new-villager-name" class="form-label">Villager Name*</label>
+            <input type="text" id="new-villager-name" class="form-input" placeholder="Enter full name">
         </div>
 
         <div class="input-field-group">
-            <label for="new-villager-mobile">Mobile Number*</label>
-            <input type="text" id="new-villager-mobile" class="input-full" placeholder="10-digit mobile number">
+            <label for="new-villager-mobile" class="form-label">Mobile Number*</label>
+            <input type="text" id="new-villager-mobile" class="form-input" placeholder="10-digit mobile number">
         </div>
 
-        <button class="btn primary flex-btn" onclick="generateCode()">
-            <span class="material-symbols-outlined">vpn_key </span>
-            Generate Code
+        <button class="btn primary flex-btn" onclick="generateCode()" style="margin-top: 10px; border-radius: 12px;">
+            <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">key</span> Generate Code
         </button>
     </div>
     
-    <h3>Generated Codes</h3>
+    <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333;">Generated Codes</h3>
     <div id="generated-codes-list"></div>
 </div>
 
