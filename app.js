@@ -150,6 +150,7 @@ async function renderVillagerIssues() {
             ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
         </div>
     `).join('') || '<p>No issues reported.</p>';
+    renderNotices();
 }
 
 // --- Admin Functions ---
@@ -247,6 +248,7 @@ async function renderAdminDashboard() {
         `).join('') || '<p style="text-align:center; color:#888;">No issues reported.</p>';
         
         renderGeneratedCodes();
+        renderNotices();
     } catch(err) { 
         console.error("Dashboard Error:", err); 
         alert("Failed to load dashboard data.");
@@ -316,5 +318,69 @@ async function deleteIssue(id) {
     if (confirm("Are you sure you want to permanently delete this issue?")) {
         await db.collection('issues').doc(id).delete();
         await renderAdminDashboard();
+    }
+}
+// --- DIGITAL NOTICE BOARD LOGIC ---
+async function postNotice() {
+    const title = document.getElementById('notice-title').value.trim();
+    const desc = document.getElementById('notice-desc').value.trim();
+    
+    if (!title || !desc) {
+        alert("Please fill out the title and details.");
+        return;
+    }
+
+    try {
+        await db.collection('notices').add({
+            title: title,
+            desc: desc,
+            timestamp: Date.now(),
+            date: new Date().toLocaleDateString()
+        });
+        
+        document.getElementById('notice-title').value = '';
+        document.getElementById('notice-desc').value = '';
+        alert("Notice posted successfully!");
+        renderNotices();
+    } catch (error) {
+        console.error("Error posting notice:", error);
+    }
+}
+
+async function renderNotices() {
+    try {
+        const snapshot = await db.collection('notices').get();
+        let notices = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        // Sort newest first
+        notices.sort((a, b) => b.timestamp - a.timestamp);
+        
+        // Re-using the beautiful card styles from the Access Codes
+        const html = notices.map(n => `
+            <div class="code-card-new" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                <div style="display:flex; justify-content:space-between; width:100%;">
+                    <strong style="font-size: 16px; color: var(--blue);">${n.title}</strong>
+                    <small style="color: #888;">${n.date}</small>
+                </div>
+                <p style="margin: 0; font-size: 14px; color: #444; line-height: 1.4;">${n.desc}</p>
+                ${currentUser && currentUser.role === 'admin' ? `
+                    <button onclick="deleteNotice('${n.id}')" style="margin-top: 8px; background:none; border:none; color:#f44336; cursor:pointer; font-size: 13px; font-weight: bold; padding: 0;">
+                        Delete Notice
+                    </button>
+                ` : ''}
+            </div>
+        `).join('') || '<p style="text-align:center; color:#888; font-size: 14px;">No active notices.</p>';
+
+        if (document.getElementById('admin-notice-list')) document.getElementById('admin-notice-list').innerHTML = html;
+        if (document.getElementById('villager-notice-list')) document.getElementById('villager-notice-list').innerHTML = html;
+    } catch (error) {
+        console.error("Error loading notices:", error);
+    }
+}
+
+async function deleteNotice(id) {
+    if (confirm("Remove this notice from the board?")) {
+        await db.collection('notices').doc(id).delete();
+        renderNotices();
     }
 }
