@@ -69,7 +69,7 @@
                 </div>
 
                 <div class="input-field-group">
-                    <label for="issue-desc" class="form-label">Description *</label>
+                    <label for="issue-desc" class="form-label">Description*</label>
                     <textarea id="issue-desc" class="form-input" rows="3" placeholder="Describe the issue..."></textarea>
                 </div>
 
@@ -164,6 +164,45 @@
                     <span class="material-symbols-outlined">print</span>
                     Print Issues Report
                 </button>
+                <div id="admin-notice-section" class="admin-section hidden">
+            
+            <div class="card" style="padding: 25px; width: 100%; box-sizing: border-box;">
+                <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">Post Official Notice</h3>
+                
+                <div class="input-field-group">
+                    <label class="form-label">Notice Title*</label>
+                    <input type="text" id="notice-title" class="form-input" placeholder="e.g., Gram Sabha Meeting">
+                </div>
+
+                <div class="input-field-group">
+                    <label class="form-label">Details*</label>
+                    <textarea id="notice-desc" class="form-input" rows="3" placeholder="Enter announcement details..."></textarea>
+                </div>
+
+                <button class="btn primary flex-btn" onclick="postNotice()" style="margin-top: 10px; border-radius: 12px; display: flex; justify-content: center; width: 100%;">
+                    <span class="material-symbols-outlined" style="margin-right: 8px;">campaign</span> Post Notice
+                </button>
+            </div>
+            
+            <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333;">Active Notices</h3>
+            <div id="admin-notice-list"></div>
+        </div>
+        ```
+
+---
+
+### Step 3: Ensure Villager Notices match Issues
+Just to be 100% sure your Villager dashboard is structured correctly, make sure the Villager notice section in your `index.html` looks exactly like this. (It should sit exactly between the "Report New Issue" card and the "My Past Issues" heading):
+
+```html
+            <h3 style="margin-top: 30px; font-size: 20px; color: #333;">
+                <span class="material-symbols-outlined">campaign</span>
+                Panchayat Notices
+            </h3>
+            <div id="villager-notice-list" style="margin-bottom: 20px;"></div>
+            ```
+
+**Why this works:** Just like the "All Issues" section, the notices are generated as individual floating cards. By adding the CSS in Step 1, we are telling the browser: *"Stop shrink-wrapping the text! Make the notice cards stretch from the left edge to the right edge."* Save the `style.css` and `index.html` files, push them to Netlify, do a quick Hard Refresh, and your notices will instantly pop out into full-width, perfectly aligned cards!
                 <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">Post Official Notice</h3>
                 
                 <div class="input-field-group">
