@@ -147,24 +147,29 @@ async function generateCode() {
     await db.collection('users').add({ name, mobile, code, role: 'villager', timestamp: Date.now() });
     renderGeneratedCodes();
 }
-
 async function renderGeneratedCodes() {
     const snapshot = await db.collection('users').where('role', '==', 'villager').get();
     let users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    // Sort so newest codes appear at the top
+    users.sort((a, b) => b.timestamp - a.timestamp);
+    
     const list = document.getElementById('generated-codes-list');
     list.innerHTML = users.map(u => `
-        <div class="list-item" style="display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #eee; padding: 10px 0;">
-            <div><strong>${u.name}</strong><br><small>${u.mobile}</small></div>
-            <div style="display:flex; align-items:center; gap:10px;">
-                <div style="background:var(--primary); color:white; padding:5px 10px; border-radius:5px;">${u.code}</div>
-                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; font-size:18px;">
-                <span class="material-symbols-outlined" style="color: #000000;">delete</span>
+        <div class="code-card-new">
+            <div class="code-card-left">
+                <span class="code-card-name">${u.name}</span>
+                <span class="code-card-phone">${u.mobile}</span>
+            </div>
+            <div class="code-card-right">
+                <div class="code-badge-new">${u.code}</div>
+                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; padding:5px; display:flex;">
+                    <span class="material-symbols-outlined" style="color: #999; font-size: 22px; transition: color 0.2s;" onmouseover="this.style.color='#f44336'" onmouseout="this.style.color='#999'">delete</span>
                 </button>
             </div>
         </div>
-    `).join('') || '<p>No codes generated yet.</p>';
+    `).join('') || '<p style="text-align:center; color:#888; font-size: 14px;">No codes generated yet.</p>';
 }
-
 async function deleteCode(id) {
     if (confirm("Delete this user?")) {
         await db.collection('users').doc(id).delete();
