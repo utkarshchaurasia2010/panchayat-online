@@ -157,6 +157,28 @@
             <div id="admin-issues-section" class="admin-section active">
                 <h3>All Issues</h3>
                 <div id="admin-issues-list"></div>
+                <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">Post Official Notice</h3>
+                
+                <div class="input-field-group">
+                    <label class="form-label">Notice Title*</label>
+                    <input type="text" id="notice-title" class="form-input" placeholder="e.g., Gram Sabha Meeting">
+                </div>
+
+                <div class="input-field-group">
+                    <label class="form-label">Details*</label>
+                    <textarea id="notice-desc" class="form-input" rows="3" placeholder="Enter announcement details..."></textarea>
+                </div>
+
+                <button class="btn primary flex-btn" onclick="postNotice()" style="margin-top: 10px; border-radius: 12px; display: flex; justify-content: center; width: 100%;">
+                    <span class="material-symbols-outlined">publish</span>
+                    Post Notice
+                </button>
+            </div>
+            
+            <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333;">Active Notices</h3>
+            <div id="admin-notice-list"></div>
+        </div>
+        </div> ```
             </div>
         </div>
     </div>
