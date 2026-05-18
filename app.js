@@ -142,10 +142,32 @@ function toggleAdminSection(sectionId) {
 async function generateCode() {
     const name = document.getElementById('new-villager-name').value.trim();
     const mobile = document.getElementById('new-villager-mobile').value.trim();
-    if (!name || mobile.length < 10) return alert('Enter valid details.');
+    // 1. Grab the new Aadhaar value
+    const aadhaar = document.getElementById('new-villager-aadhaar').value.trim(); 
+    
+    // 2. Validate all three fields (making sure Aadhaar is 12 digits)
+    if (!name || mobile.length < 10 || aadhaar.length !== 12) {
+        alert('Please enter a valid name, 10-digit mobile, and 12-digit Aadhaar number.');
+        return;
+    }
     
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    await db.collection('users').add({ name, mobile, code, role: 'villager', timestamp: Date.now() });
+    
+    // 3. Save the new aadhaar variable to the database
+    await db.collection('users').add({ 
+        name: name, 
+        mobile: mobile, 
+        aadhaar: aadhaar, // Saves the ID to Firestore
+        code: code, 
+        role: 'villager', 
+        timestamp: Date.now() 
+    });
+    
+    // 4. Clear the form after saving
+    document.getElementById('new-villager-name').value = '';
+    document.getElementById('new-villager-mobile').value = '';
+    document.getElementById('new-villager-aadhaar').value = '';
+    
     renderGeneratedCodes();
 }
 async function renderGeneratedCodes() {
@@ -161,6 +183,7 @@ async function renderGeneratedCodes() {
             <div class="code-card-left">
                 <span class="code-card-name">${u.name}</span>
                 <span class="code-card-phone">${u.mobile}</span>
+                <span class="code-card-phone">Aadhaar: <strong style="color: #555;">${u.aadhaar ? u.aadhaar : 'N/A'}</strong></span>
             </div>
             <div class="code-card-right">
                 <div class="code-badge-new">${u.code}</div>
