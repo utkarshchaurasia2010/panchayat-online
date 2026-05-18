@@ -298,3 +298,80 @@ header h2 {
     color: white;
     line-height: 1;
 }
+/* --- NEW UI ULTRA PRO MAX DESIGN FROM SS --- */
+
+/* Form Labels (Villager Name, Mobile Number) */
+.form-label {
+    display: block;
+    font-weight: bold;
+    color: #444;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+/* Rounded, grey-bordered inputs */
+.form-input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 15px;
+    background-color: #fafafa;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    border-color: var(--primary);
+    background-color: #fff;
+}
+
+/* Beautiful Generated Code Cards */
+.code-card-new {
+    background: white;
+    padding: 16px 20px;
+    border-radius: 16px;
+    margin-bottom: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.code-card-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.code-card-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.code-card-phone {
+    font-size: 14px;
+    color: #888;
+}
+
+.code-card-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* The big green access code pill */
+.code-badge-new {
+    background: #4caf50;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
