@@ -5,15 +5,15 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// --- 1. PASTE YOUR ACTUAL FIREBASE CONFIG KEYS HERE ---
+// --- FIREBASE CONFIG ---
 const firebaseConfig = {
     apiKey: "AIzaSyAUkGblKHSz1Ycx7VA93DVJ_P3J6tAUMVQ",
-  authDomain: "e-panchayat-a32cb.firebaseapp.com",
-  projectId: "e-panchayat-a32cb",
-  storageBucket: "e-panchayat-a32cb.firebasestorage.app",
-  messagingSenderId: "996175917140",
-  appId: "1:996175917140:web:798c382e7807ccfb113dc1",
-  measurementId: "G-E2YFVMD57C"
+    authDomain: "e-panchayat-a32cb.firebaseapp.com",
+    projectId: "e-panchayat-a32cb",
+    storageBucket: "e-panchayat-a32cb.firebasestorage.app",
+    messagingSenderId: "996175917140",
+    appId: "1:996175917140:web:798c382e7807ccfb113dc1",
+    measurementId: "G-E2YFVMD57C"
 };
 
 // Initialize Firebase
@@ -21,7 +21,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let currentUser = null;
-let adminIssuesList = []; // This stores issues so the modal can access them
+let adminIssuesList = []; 
 
 // --- Helper Functions ---
 const switchView = (viewId) => {
@@ -51,7 +51,7 @@ async function login() {
         }
     } catch (error) {
         console.error("Login Error:", error);
-        alert("Login failed. Check your internet.");
+        alert("Login failed. Check your internet or Firebase Rules.");
     }
 }
 
@@ -124,8 +124,8 @@ async function renderVillagerIssues() {
     list.innerHTML = issues.map(issue => `
         <div class="list-item">
             <div class="list-item-header">
-                <strong>${issue.category}</strong>
-                <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
+                <strong>${issue.category || 'Issue'}</strong>
+                <span class="badge ${issue.status || 'new'}">${(issue.status || 'new').toUpperCase()}</span>
             </div>
             <p>${issue.desc}</p>
             ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
@@ -142,10 +142,8 @@ function toggleAdminSection(sectionId) {
 async function generateCode() {
     const name = document.getElementById('new-villager-name').value.trim();
     const mobile = document.getElementById('new-villager-mobile').value.trim();
-    // 1. Grab the new Aadhaar value
     const aadhaar = document.getElementById('new-villager-aadhaar').value.trim(); 
     
-    // 2. Validate all three fields (making sure Aadhaar is 12 digits)
     if (!name || mobile.length < 10 || aadhaar.length !== 12) {
         alert('Please enter a valid name, 10-digit mobile, and 12-digit Aadhaar number.');
         return;
@@ -153,82 +151,87 @@ async function generateCode() {
     
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // 3. Save the new aadhaar variable to the database
     await db.collection('users').add({ 
         name: name, 
         mobile: mobile, 
-        aadhaar: aadhaar, // Saves the ID to Firestore
+        aadhaar: aadhaar, 
         code: code, 
         role: 'villager', 
         timestamp: Date.now() 
     });
     
-    // 4. Clear the form after saving
     document.getElementById('new-villager-name').value = '';
     document.getElementById('new-villager-mobile').value = '';
     document.getElementById('new-villager-aadhaar').value = '';
     
     renderGeneratedCodes();
 }
+
 async function renderGeneratedCodes() {
-    const snapshot = await db.collection('users').where('role', '==', 'villager').get();
-    let users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    
-    // Sort so newest codes appear at the top
-    users.sort((a, b) => b.timestamp - a.timestamp);
-    
-    const list = document.getElementById('generated-codes-list');
-    list.innerHTML = users.map(u => `
-        <div class="code-card-new">
-            <div class="code-card-left">
-                <span class="code-card-name">${u.name}</span>
-                <span class="code-card-phone">${u.mobile}</span>
-                <span class="code-card-phone">Aadhaar: <strong style="color: #555;">${u.aadhaar ? u.aadhaar : 'N/A'}</strong></span>
+    try {
+        const snapshot = await db.collection('users').where('role', '==', 'villager').get();
+        let users = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        users.sort((a, b) => b.timestamp - a.timestamp);
+        
+        const list = document.getElementById('generated-codes-list');
+        list.innerHTML = users.map(u => `
+            <div class="code-card-new">
+                <div class="code-card-left">
+                    <span class="code-card-name">${u.name}</span>
+                    <span class="code-card-phone">${u.mobile}</span>
+                    <span class="code-card-phone">Aadhaar: <strong style="color: #555;">${u.aadhaar ? u.aadhaar : 'N/A'}</strong></span>
+                </div>
+                <div class="code-card-right">
+                    <div class="code-badge-new">${u.code}</div>
+                    <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; padding:5px; display:flex;">
+                        <span class="material-symbols-outlined" style="color: #999; font-size: 22px; transition: color 0.2s;" onmouseover="this.style.color='#f44336'" onmouseout="this.style.color='#999'">delete</span>
+                    </button>
+                </div>
             </div>
-            <div class="code-card-right">
-                <div class="code-badge-new">${u.code}</div>
-                <button onclick="deleteCode('${u.id}')" style="background:none; border:none; cursor:pointer; padding:5px; display:flex;">
-                    <span class="material-symbols-outlined" style="color: #999; font-size: 22px; transition: color 0.2s;" onmouseover="this.style.color='#f44336'" onmouseout="this.style.color='#999'">delete</span>
-                </button>
-            </div>
-        </div>
-    `).join('') || '<p style="text-align:center; color:#888; font-size: 14px;">No codes generated yet.</p>';
+        `).join('') || '<p style="text-align:center; color:#888; font-size: 14px;">No codes generated yet.</p>';
+    } catch(err) { console.error("Error loading codes:", err); }
 }
+
 async function deleteCode(id) {
     if (confirm("Delete this user?")) {
         await db.collection('users').doc(id).delete();
         renderGeneratedCodes();
-    }async function renderAdminDashboard() {
-    const snapshot = await db.collection('issues').get();
-     // Save to global array so the modal can find the data without reloading
-    adminIssuesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    adminIssuesList.sort((a, b) => b.timestamp - a.timestamp);
-    
-    // --- START OF NEW CODE: Update the stats boxes ---
-    const newCount = adminIssuesList.filter(i => i.status === 'new').length;
-    const processCount = adminIssuesList.filter(i => i.status === 'process').length;
-    const resolvedCount = adminIssuesList.filter(i => i.status === 'resolved').length;
-
-    if(document.getElementById('stat-new')) document.getElementById('stat-new').innerText = newCount;
-    if(document.getElementById('stat-process')) document.getElementById('stat-process').innerText = processCount;
-    if(document.getElementById('stat-resolved')) document.getElementById('stat-resolved').innerText = resolvedCount;
-    // --- END OF NEW CODE ---
-
-    const list = document.getElementById('admin-issues-list');
-    
-    // Draw simple, clean clickable cards
-    list.innerHTML = adminIssuesList.map(issue => `
-        <div class="list-item clickable-card" onclick="openIssueModal('${issue.id}')">
-            <div class="list-item-header">
-                <strong style="font-size: 16px;">${issue.category}</strong>
-                <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
-            </div>
-            <p style="color: #666; font-size: 13px; margin: 5px 0;"><strong>Submitted by:</strong> ${issue.villagerName}</p>
-        </div>
-    `).join('') || '<p style="text-align:center; color:#888;">No issues reported.</p>';
-    
-    renderGeneratedCodes();
+    }
 }
+
+async function renderAdminDashboard() {
+    try {
+        const snapshot = await db.collection('issues').get();
+        adminIssuesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        adminIssuesList.sort((a, b) => b.timestamp - a.timestamp);
+        
+        // --- SAFE STATS COUNTER ---
+        const newCount = adminIssuesList.filter(i => (i.status || 'new').toLowerCase() === 'new').length;
+        const processCount = adminIssuesList.filter(i => (i.status || 'process').toLowerCase() === 'process').length;
+        const resolvedCount = adminIssuesList.filter(i => (i.status || 'resolved').toLowerCase() === 'resolved').length;
+
+        if(document.getElementById('stat-new')) document.getElementById('stat-new').innerText = newCount;
+        if(document.getElementById('stat-process')) document.getElementById('stat-process').innerText = processCount;
+        if(document.getElementById('stat-resolved')) document.getElementById('stat-resolved').innerText = resolvedCount;
+
+        const list = document.getElementById('admin-issues-list');
+        
+        list.innerHTML = adminIssuesList.map(issue => `
+            <div class="list-item clickable-card" onclick="openIssueModal('${issue.id}')">
+                <div class="list-item-header">
+                    <strong style="font-size: 16px;">${issue.category || 'Issue'}</strong>
+                    <span class="badge ${issue.status || 'new'}">${(issue.status || 'new').toUpperCase()}</span>
+                </div>
+                <p style="color: #666; font-size: 13px; margin: 5px 0;"><strong>Submitted by:</strong> ${issue.villagerName || 'Villager'}</p>
+            </div>
+        `).join('') || '<p style="text-align:center; color:#888;">No issues reported.</p>';
+        
+        renderGeneratedCodes();
+    } catch(err) { 
+        console.error("Dashboard Error:", err); 
+        alert("Failed to load dashboard data.");
+    }
 }
 
 // --- NEW MODAL FUNCTIONS ---
@@ -236,42 +239,36 @@ function openIssueModal(id) {
     const issue = adminIssuesList.find(i => i.id === id);
     if (!issue) return;
     
+    const safeStatus = (issue.status || 'new').toLowerCase();
     const modalBody = document.getElementById('modal-body');
     
-    // Build the inside of the modal
     modalBody.innerHTML = `
-        <div class="modal-title">${issue.category} Issue</div>
-        
+        <div class="modal-title">${issue.category || 'Reported'} Issue</div>
         <div class="modal-section">
             <span class="modal-label">Submitted by</span>
-            <span class="modal-value">${issue.villagerName} <br><small style="color:#666;">(${issue.villagerMobile})</small></span>
+            <span class="modal-value">${issue.villagerName || 'Unknown'} <br><small style="color:#666;">(${issue.villagerMobile || 'No number'})</small></span>
         </div>
-        
         <div class="modal-section">
             <span class="modal-label">Category</span>
-            <span class="modal-value">${issue.category}</span>
+            <span class="modal-value">${issue.category || 'N/A'}</span>
         </div>
-        
         <div class="modal-section">
             <span class="modal-label">Description</span>
-            <span class="modal-value">${issue.desc}</span>
+            <span class="modal-value">${issue.desc || 'No description provided.'}</span>
         </div>
-        
         ${issue.image ? `
         <div class="modal-section">
             <span class="modal-label">Attached Photo</span>
             <img src="${issue.image}" style="max-width: 100%; border-radius: 12px; margin-top: 8px;">
         </div>` : ''}
-        
         <div class="modal-section">
             <span class="modal-label">Update Status</span>
             <div class="status-toggle-group">
-                <button class="status-toggle-btn ${issue.status === 'new' ? 'active new' : ''}" onclick="updateStatusFromModal('${issue.id}', 'new')">New</button>
-                <button class="status-toggle-btn ${issue.status === 'process' ? 'active process' : ''}" onclick="updateStatusFromModal('${issue.id}', 'process')">In Process</button>
-                <button class="status-toggle-btn ${issue.status === 'resolved' ? 'active resolved' : ''}" onclick="updateStatusFromModal('${issue.id}', 'resolved')">Resolved</button>
+                <button class="status-toggle-btn ${safeStatus === 'new' ? 'active new' : ''}" onclick="updateStatusFromModal('${issue.id}', 'new')">New</button>
+                <button class="status-toggle-btn ${safeStatus === 'process' ? 'active process' : ''}" onclick="updateStatusFromModal('${issue.id}', 'process')">In Process</button>
+                <button class="status-toggle-btn ${safeStatus === 'resolved' ? 'active resolved' : ''}" onclick="updateStatusFromModal('${issue.id}', 'resolved')">Resolved</button>
             </div>
         </div>
-
         <div class="modal-section" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
             <button onclick="deleteIssue('${issue.id}'); closeIssueModal();" style="background: none; border: none; color: #f44336; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; gap: 5px;">
                 <span class="material-symbols-outlined">delete</span> Delete Issue Record
@@ -288,12 +285,12 @@ function closeIssueModal() {
 
 async function updateStatusFromModal(id, status) {
     await updateStatus(id, status);
-    openIssueModal(id); // Instantly re-draws the modal so the color changes to active
+    openIssueModal(id); 
 }
 
 async function updateStatus(id, status) {
-    await db.collection('issues').doc(id).update({ status });
-    await renderAdminDashboard(); // Refresh the background list
+    await db.collection('issues').doc(id).update({ status: status });
+    await renderAdminDashboard(); 
 }
 
 async function deleteIssue(id) {
