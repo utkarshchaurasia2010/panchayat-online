@@ -95,7 +95,7 @@
             </div>
             <div class="stat-box orange">
                 <h2 id="stat-process">0</h2>
-                <p>In Process</p>
+                <p>In Progress</p>
             </div>
             <div class="stat-box green">
                 <h2 id="stat-resolved">0</h2>
@@ -109,24 +109,24 @@
                 Generate Access Code
             </button>
             <button class="btn outline primary" onclick="toggleAdminSection('admin-issues-section')" style="margin-top:10px;">
-                <span class="material-symbols-outlined">arrow_drop_down</span>
                 All Issues
+                <span class="material-symbols-outlined">arrow_drop_down</span>
             </button>
             <div id="generate-code-section" class="admin-section hidden">
     <h3>New Access Code</h3>
     <div class="card">
         <div class="input-field-group">
-            <label for="new-villager-name">Villager Name *</label>
+            <label for="new-villager-name">Villager Name*</label>
             <input type="text" id="new-villager-name" class="input-full" placeholder="Enter full name">
         </div>
 
         <div class="input-field-group">
-            <label for="new-villager-mobile">Mobile Number *</label>
+            <label for="new-villager-mobile">Mobile Number*</label>
             <input type="text" id="new-villager-mobile" class="input-full" placeholder="10-digit mobile number">
         </div>
 
         <button class="btn primary flex-btn" onclick="generateCode()">
-            <span class="material-symbols-outlined">vpn_key</span>
+            <span class="material-symbols-outlined">vpn_key </span>
             Generate Code
         </button>
     </div>
