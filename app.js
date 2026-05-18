@@ -194,7 +194,6 @@ async function renderAdminDashboard() {
                 <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
             </div>
             <p style="color: #666; font-size: 13px; margin: 5px 0;"><strong>Submitted by:</strong> ${issue.villagerName}</p>
-            <p style="font-size: 14px; color: #444;">${issue.desc}</p>
         </div>
     `).join('') || '<p style="text-align:center; color:#888;">No issues reported.</p>';
     
