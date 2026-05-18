@@ -82,6 +82,8 @@
                     <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">upload</span> Submit Issue
                 </button>
             </div>
+            <h3 style="margin-top: 30px; font-size: 20px; color: #333;">📢 Panchayat Notices</h3>
+            <div id="villager-notice-list" style="margin-bottom: 20px;"></div>
             <h3 style="margin-top:20px;">My Past Issues :</h3>
             <div id="villager-issues-list"></div>
         </div>
@@ -120,6 +122,10 @@
             <button class="btn outline primary" onclick="toggleAdminSection('admin-issues-section')" style="margin-top:10px;">
                 All Issues
                 <span class="material-symbols-outlined">arrow_drop_down</span>
+            </button>
+            <button class="nav-btn" onclick="toggleAdminSection('admin-notice-section')">
+                <span class="material-symbols-outlined">crisis_alert</span>
+                Notices
             </button>
   <div id="generate-code-section" class="admin-section hidden">
     <div class="card" style="padding: 25px;">
