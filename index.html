@@ -49,24 +49,34 @@
             </button>
         </header>
         <div class="container">
-            <h3>Report New Issue</h3>
-            <div class="card">
-                <select id="issue-category" class="input-full">
-                    <option value="" disabled selected>Select Category</option>
-                    <option value="Water Supply">Water Supply
-                    </option>
-                    <option value="Electricity">Electricity
-                    </option>
-                    <option value="Roads"> Roads & Infrastructure
-                        </option>
-                    <option value="Sanitation">Sanitation
-                        </option>
-                    <option value="Other">Other
-                        </option>
-                </select>
-                <textarea id="issue-desc" class="input-full" rows="3" placeholder="Describe the issue..."></textarea>
-                <input type="file" id="issue-img" class="input-full" accept="image/*">
-<button class="btn primary" onclick="submitIssue()" style="margin-top: 10px;">Submit Issue</button>
+            <div class="card" style="padding: 25px;">
+                <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">Report New Issue</h3>
+                
+                <div class="input-field-group">
+                    <label for="issue-category" class="form-label">Issue Category *</label>
+                    <select id="issue-category" class="form-input">
+                        <option value="" disabled selected>Select Category</option>
+                        <option value="Water Supply">Water Supply</option>
+                        <option value="Electricity">Electricity</option>
+                        <option value="Roads">Roads & Infrastructure</option>
+                        <option value="Sanitation">Sanitation</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="input-field-group">
+                    <label for="issue-desc" class="form-label">Description *</label>
+                    <textarea id="issue-desc" class="form-input" rows="3" placeholder="Describe the issue..."></textarea>
+                </div>
+
+                <div class="input-field-group">
+                    <label for="issue-img" class="form-label">Attach Photo (Optional)</label>
+                    <input type="file" id="issue-img" class="form-input" style="padding: 10px 16px;" accept="image/*">
+                </div>
+
+                <button class="btn primary" onclick="submitIssue()" style="margin-top: 10px; border-radius: 12px; display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">upload</span> Submit Issue
+                </button>
             </div>
             <h3 style="margin-top:20px;">My Past Issues :</h3>
             <div id="villager-issues-list"></div>
