@@ -202,19 +202,7 @@ async function deleteCode(id) {
 }
 async function renderAdminDashboard() {
     const snapshot = await db.collection('issues').get();
-    // --- NEW STATS UPDATER LOGIC ---
-    // 1. Count the issues based on their status
-    const newCount = issues.filter(i => i.status === 'new').length;
-    const processCount = issues.filter(i => i.status === 'process').length;
-    const resolvedCount = issues.filter(i => i.status === 'resolved').length;
-
-    // 2. Push the numbers to the Dashboard boxes
-    if(document.getElementById('stat-new')) document.getElementById('stat-new').innerText = newCount;
-    if(document.getElementById('stat-process')) document.getElementById('stat-process').innerText = processCount;
-    if(document.getElementById('stat-resolved')) document.getElementById('stat-resolved').innerText = resolvedCount;
-    // -------------------------------
-    
-    // Save to global array so the modal can find the data without reloading
+     // Save to global array so the modal can find the data without reloading
     adminIssuesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     adminIssuesList.sort((a, b) => b.timestamp - a.timestamp);
     
