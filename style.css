@@ -71,31 +71,6 @@ h1 { font-size: 28px; margin-bottom: 5px; }
     flex-direction: column;
     align-items: center;
 }
-/* Ensure the form and list take up the full container width */
-.card, .admin-section, #generated-codes-list, #admin-issues-list {
-    width: 100% !important;
-    max-width: 100% !important;
-    margin-left: 0;
-    margin-right: 0;
-}
-
-/* Force inputs and buttons inside the card to be full width */
-.input-full, .card .btn.primary {
-    width: 100%;
-    display: block;
-    box-sizing: border-box; /* Crucial: includes padding in the width calculation */
-}
-
-/* Professional update for the Generated Codes card spacing */
-#generated-codes-list .list-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 10px;
-    box-sizing: border-box; 
-}
 
 /* Adjusts the Issue Tiles for a more compact look */
 .list-item { 
