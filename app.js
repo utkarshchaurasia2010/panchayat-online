@@ -198,14 +198,22 @@ async function deleteCode(id) {
     if (confirm("Delete this user?")) {
         await db.collection('users').doc(id).delete();
         renderGeneratedCodes();
-    }
-}
-async function renderAdminDashboard() {
+    }async function renderAdminDashboard() {
     const snapshot = await db.collection('issues').get();
      // Save to global array so the modal can find the data without reloading
     adminIssuesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     adminIssuesList.sort((a, b) => b.timestamp - a.timestamp);
     
+    // --- START OF NEW CODE: Update the stats boxes ---
+    const newCount = adminIssuesList.filter(i => i.status === 'new').length;
+    const processCount = adminIssuesList.filter(i => i.status === 'process').length;
+    const resolvedCount = adminIssuesList.filter(i => i.status === 'resolved').length;
+
+    if(document.getElementById('stat-new')) document.getElementById('stat-new').innerText = newCount;
+    if(document.getElementById('stat-process')) document.getElementById('stat-process').innerText = processCount;
+    if(document.getElementById('stat-resolved')) document.getElementById('stat-resolved').innerText = resolvedCount;
+    // --- END OF NEW CODE ---
+
     const list = document.getElementById('admin-issues-list');
     
     // Draw simple, clean clickable cards
@@ -220,6 +228,7 @@ async function renderAdminDashboard() {
     `).join('') || '<p style="text-align:center; color:#888;">No issues reported.</p>';
     
     renderGeneratedCodes();
+}
 }
 
 // --- NEW MODAL FUNCTIONS ---
