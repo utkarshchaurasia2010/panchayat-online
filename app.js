@@ -4,6 +4,25 @@ if ('serviceWorker' in navigator) {
         console.log('Service Worker Registered');
     });
 }
+// --- PWA INSTALL LOGIC ---
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) installBtn.classList.remove('hidden');
+});
+
+document.getElementById('install-btn')?.addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            document.getElementById('install-btn').classList.add('hidden');
+        }
+        deferredPrompt = null;
+    }
+});
 
 // --- FIREBASE CONFIG ---
 const firebaseConfig = {
