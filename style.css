@@ -514,3 +514,36 @@ header h2 {
     justify-content: space-between;
     align-items: center;
 }
+/* --- PRINT STYLES FOR ADMIN REPORT --- */
+@media print {
+    /* Hide everything on the page first */
+    body * {
+        visibility: hidden;
+    }
+    
+    /* Only show the issues list and the stats */
+    #admin-issues-section, #admin-issues-section * {
+        visibility: visible;
+    }
+    
+    /* Move the printable area to the top left of the paper */
+    #admin-issues-section {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+    }
+
+    /* Hide the buttons so they don't show up on paper */
+    button, .btn, .status-toggle-group {
+        display: none !important;
+    }
+
+    /* Make the cards look like clean paper borders */
+    .clickable-card {
+        border: 1px solid #000;
+        box-shadow: none;
+        break-inside: avoid; /* Prevents a card from splitting across two pages */
+        margin-bottom: 10px;
+    }
+}
