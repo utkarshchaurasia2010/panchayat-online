@@ -21,6 +21,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
 let currentUser = null;
+let adminIssuesList = []; // This stores issues so the modal can access them
 
 // --- Helper Functions ---
 const switchView = (viewId) => {
@@ -176,41 +177,98 @@ async function deleteCode(id) {
         renderGeneratedCodes();
     }
 }
-
 async function renderAdminDashboard() {
     const snapshot = await db.collection('issues').get();
-    let issues = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    issues.sort((a, b) => b.timestamp - a.timestamp);
+    
+    // Save to global array so the modal can find the data without reloading
+    adminIssuesList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    adminIssuesList.sort((a, b) => b.timestamp - a.timestamp);
     
     const list = document.getElementById('admin-issues-list');
-    list.innerHTML = issues.map(issue => `
-        <div class="list-item">
+    
+    // Draw simple, clean clickable cards
+    list.innerHTML = adminIssuesList.map(issue => `
+        <div class="list-item clickable-card" onclick="openIssueModal('${issue.id}')">
             <div class="list-item-header">
-                <strong>${issue.category}</strong>
-                <button onclick="deleteIssue('${issue.id}')" style="background:none; border:none; cursor:pointer;">
-                <span class="material-symbols-outlined" style="color: #000000;">delete</span>
-                </button>
+                <strong style="font-size: 16px;">${issue.category}</strong>
+                <span class="badge ${issue.status}">${issue.status.toUpperCase()}</span>
             </div>
-            <p><strong>By:</strong> ${issue.villagerName} (${issue.villagerMobile})</p>
-            <p>${issue.desc}</p>
-            ${issue.image ? `<img src="${issue.image}" class="item-img">` : ''}
-            <div style="margin-top:10px;">
-                <button class="status-btn" onclick="updateStatus('${issue.id}', 'process')">Mark In Process</button>
-                <button class="status-btn" onclick="updateStatus('${issue.id}', 'resolved')">Mark Resolved</button>
+            <p style="color: #666; font-size: 13px; margin: 5px 0;"><strong>Submitted by:</strong> ${issue.villagerName}</p>
+            <p style="font-size: 14px; color: #444;">${issue.desc}</p>
+        </div>
+    `).join('') || '<p style="text-align:center; color:#888;">No issues reported.</p>';
+    
+    renderGeneratedCodes();
+}
+
+// --- NEW MODAL FUNCTIONS ---
+function openIssueModal(id) {
+    const issue = adminIssuesList.find(i => i.id === id);
+    if (!issue) return;
+    
+    const modalBody = document.getElementById('modal-body');
+    
+    // Build the inside of the modal
+    modalBody.innerHTML = `
+        <div class="modal-title">${issue.category} Issue</div>
+        
+        <div class="modal-section">
+            <span class="modal-label">Submitted by</span>
+            <span class="modal-value">${issue.villagerName} <br><small style="color:#666;">(${issue.villagerMobile})</small></span>
+        </div>
+        
+        <div class="modal-section">
+            <span class="modal-label">Category</span>
+            <span class="modal-value">${issue.category}</span>
+        </div>
+        
+        <div class="modal-section">
+            <span class="modal-label">Description</span>
+            <span class="modal-value">${issue.desc}</span>
+        </div>
+        
+        ${issue.image ? `
+        <div class="modal-section">
+            <span class="modal-label">Attached Photo</span>
+            <img src="${issue.image}" style="max-width: 100%; border-radius: 12px; margin-top: 8px;">
+        </div>` : ''}
+        
+        <div class="modal-section">
+            <span class="modal-label">Update Status</span>
+            <div class="status-toggle-group">
+                <button class="status-toggle-btn ${issue.status === 'new' ? 'active new' : ''}" onclick="updateStatusFromModal('${issue.id}', 'new')">New</button>
+                <button class="status-toggle-btn ${issue.status === 'process' ? 'active process' : ''}" onclick="updateStatusFromModal('${issue.id}', 'process')">In Process</button>
+                <button class="status-toggle-btn ${issue.status === 'resolved' ? 'active resolved' : ''}" onclick="updateStatusFromModal('${issue.id}', 'resolved')">Resolved</button>
             </div>
         </div>
-    `).join('') || '<p>No issues reported.</p>';
-    renderGeneratedCodes();
+
+        <div class="modal-section" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 20px;">
+            <button onclick="deleteIssue('${issue.id}'); closeIssueModal();" style="background: none; border: none; color: #f44336; font-weight: bold; font-size: 15px; cursor: pointer; display: flex; align-items: center; justify-content: center; width: 100%; gap: 5px;">
+                <span class="material-symbols-outlined">delete</span> Delete Issue Record
+            </button>
+        </div>
+    `;
+    
+    document.getElementById('issue-modal').classList.remove('hidden');
+}
+
+function closeIssueModal() {
+    document.getElementById('issue-modal').classList.add('hidden');
+}
+
+async function updateStatusFromModal(id, status) {
+    await updateStatus(id, status);
+    openIssueModal(id); // Instantly re-draws the modal so the color changes to active
 }
 
 async function updateStatus(id, status) {
     await db.collection('issues').doc(id).update({ status });
-    renderAdminDashboard();
+    await renderAdminDashboard(); // Refresh the background list
 }
 
 async function deleteIssue(id) {
-    if (confirm("Delete this issue?")) {
+    if (confirm("Are you sure you want to permanently delete this issue?")) {
         await db.collection('issues').doc(id).delete();
-        renderAdminDashboard();
+        await renderAdminDashboard();
     }
 }
