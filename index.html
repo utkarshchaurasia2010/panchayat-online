@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>E-Panchayat</title>
     <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="login-view" class="view active">
@@ -82,11 +81,12 @@
                     <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">upload</span> Submit Issue
                 </button>
             </div>
+            
             <h3 style="margin-top: 30px; font-size: 20px; color: #333;">
-                <span class="material-symbols-outlined">campaign</span>
-                Panchayat Notices
+                <span class="material-symbols-outlined">campaign</span> Panchayat Notices
             </h3>
             <div id="villager-notice-list" style="margin-bottom: 20px;"></div>
+            
             <h3 style="margin-top:20px;">My Past Issues :</h3>
             <div id="villager-issues-list"></div>
         </div>
@@ -119,17 +119,24 @@
 
         <div class="container">
             <button class="btn outline primary" onclick="switchView('generate-code-view')">
-                <span class="material-symbols-outlined">add</span>
-                Generate Access Code
+                <span class="material-symbols-outlined">add</span> Generate Access Code
             </button>
             <button class="btn outline primary" onclick="toggleAdminSection('admin-issues-section')" style="margin-top:10px;">
-                All Issues
-                <span class="material-symbols-outlined">arrow_drop_down</span>
+                All Issues <span class="material-symbols-outlined">arrow_drop_down</span>
             </button>
-           <button class="btn outline primary" onclick="switchView('admin-notice-view')" style="margin-top:10px;">
-            <span class="material-symbols-outlined">campaign</span> Notices
-        </button>
-            <div id="generate-code-view" class="view">
+            <button class="btn outline primary" onclick="switchView('admin-notice-view')" style="margin-top:10px;">
+                <span class="material-symbols-outlined">campaign</span> Notices
+            </button>
+
+            <div id="admin-issues-section" class="admin-section active" style="margin-top: 25px;">
+                <h3>All Issues</h3>
+                <div id="admin-issues-list"></div>
+                <button class="btn outline" onclick="window.print()" style="margin-bottom: 20px; border-radius: 8px; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined">print</span> Print Issues Report
+                </button>
+            </div>
+        </div>
+    </div> <div id="generate-code-view" class="view">
         <header>
             <div style="display: flex; align-items: center; gap: 15px;">
                 <span class="material-symbols-outlined" onclick="switchView('admin-view')" style="cursor: pointer; font-size: 24px;">arrow_back</span>
@@ -138,21 +145,21 @@
         </header>
         
         <div class="container">
-            <div class="card" style="padding: 25px;">
+            <div class="card" style="padding: 25px; box-sizing: border-box;">
                 <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">New Access Code</h3>
                 
                 <div class="input-field-group">
-                    <label for="new-villager-name" class="form-label">Villager Name*</label>
+                    <label class="form-label">Villager Name*</label>
                     <input type="text" id="new-villager-name" class="form-input" placeholder="Enter full name">
                 </div>
 
                 <div class="input-field-group">
-                    <label for="new-villager-mobile" class="form-label">Mobile Number*</label>
+                    <label class="form-label">Mobile Number*</label>
                     <input type="text" id="new-villager-mobile" class="form-input" placeholder="10-digit mobile number">
                 </div>
                 
                 <div class="input-field-group">
-                    <label for="new-villager-aadhaar" class="form-label">Aadhaar Number*</label>
+                    <label class="form-label">Aadhaar Number*</label>
                     <input type="text" id="new-villager-aadhaar" class="form-input" placeholder="12-digit Aadhaar number" maxlength="12">
                 </div>
 
@@ -165,98 +172,53 @@
             <div id="generated-codes-list" style="width: 100%;"></div>
         </div>
     </div>
-    <div id="admin-issues-section" class="admin-section active">  
-            <h3>All Issues</h3>
-            <div id="admin-issues-list"></div>
-        </div>
-            <button class="btn outline" onclick="window.print()" style="margin-bottom: 20px; border-radius: 8px;">
-                    <span class="material-symbols-outlined">print</span>
-                    Print Issues Report
+
+    <div id="admin-notice-view" class="view">
+        <header>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span class="material-symbols-outlined" onclick="switchView('admin-view')" style="cursor: pointer; font-size: 24px;">arrow_back</span>
+                <h2 style="margin: 0; font-size: 20px;">Manage Notices</h2>
+            </div>
+        </header>
+        
+        <div class="container">
+            <div class="card" style="padding: 25px; width: 100%; box-sizing: border-box;">
+                <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">Post Official Notice</h3>
+                
+                <div class="input-field-group">
+                    <label class="form-label">Notice Title *</label>
+                    <input type="text" id="notice-title" class="form-input" placeholder="e.g., Gram Sabha Meeting">
+                </div>
+
+                <div class="input-field-group">
+                    <label class="form-label">Details *</label>
+                    <textarea id="notice-desc" class="form-input" rows="3" placeholder="Enter announcement details..."></textarea>
+                </div>
+
+                <button class="btn primary flex-btn" onclick="postNotice()" style="margin-top: 10px; border-radius: 12px; display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">campaign</span> Post Notice
                 </button>
-</div> <div id="generate-code-view" class="view">
-    <header>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <span class="material-symbols-outlined" onclick="switchView('admin-view')" style="cursor: pointer; font-size: 24px;">arrow_back</span>
-            <h2 style="margin: 0; font-size: 20px;">Generate Access Code</h2>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="card" style="padding: 25px; box-sizing: border-box;">
-            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">New Access Code</h3>
-            
-            <div class="input-field-group">
-                <label class="form-label">Villager Name *</label>
-                <input type="text" id="new-villager-name" class="form-input" placeholder="Enter full name">
-            </div>
-
-            <div class="input-field-group">
-                <label class="form-label">Mobile Number *</label>
-                <input type="text" id="new-villager-mobile" class="form-input" placeholder="10-digit mobile number">
             </div>
             
-            <div class="input-field-group">
-                <label class="form-label">Aadhaar Number *</label>
-                <input type="text" id="new-villager-aadhaar" class="form-input" placeholder="12-digit Aadhaar number" maxlength="12">
-            </div>
-
-            <button class="btn primary flex-btn" onclick="generateCode()" style="margin-top: 10px; border-radius: 12px; width: 100%; display: flex; justify-content: center; align-items: center;">
-                <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">key</span> Generate Code
-            </button>
+            <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333; width: 100%;">Active Notices</h3>
+            <div id="admin-notice-list" style="width: 100%;"></div>
         </div>
-        
-        <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333; width: 100%;">Generated Codes</h3>
-        <div id="generated-codes-list" style="width: 100%;"></div>
     </div>
-</div>
 
-<div id="admin-notice-view" class="view">
-    <header>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <span class="material-symbols-outlined" onclick="switchView('admin-view')" style="cursor: pointer; font-size: 24px;">arrow_back</span>
-            <h2 style="margin: 0; font-size: 20px;">Manage Notices</h2>
-        </div>
-    </header>
-    
-    <div class="container">
-        <div class="card" style="padding: 25px; width: 100%; box-sizing: border-box;">
-            <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">Post Official Notice</h3>
-            
-            <div class="input-field-group">
-                <label class="form-label">Notice Title *</label>
-                <input type="text" id="notice-title" class="form-input" placeholder="e.g., Gram Sabha Meeting">
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="app.js"></script>
+
+    <div id="issue-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin: 0; font-size: 18px;">Issue Details</h3>
+                <button class="close-btn" onclick="closeIssueModal()">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
             </div>
-
-            <div class="input-field-group">
-                <label class="form-label">Details *</label>
-                <textarea id="notice-desc" class="form-input" rows="3" placeholder="Enter announcement details..."></textarea>
-            </div>
-
-            <button class="btn primary flex-btn" onclick="postNotice()" style="margin-top: 10px; border-radius: 12px; display: flex; justify-content: center; align-items: center; width: 100%;">
-                <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">campaign</span> Post Notice
-            </button>
+            <div id="modal-body"></div>
         </div>
-        
-        <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333; width: 100%;">Active Notices</h3>
-        <div id="admin-notice-list" style="width: 100%;"></div>
     </div>
-</div>
-
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-<script src="app.js"></script>
-
-<div id="issue-modal" class="modal-overlay hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 style="margin: 0; font-size: 18px;">Issue Details</h3>
-            <button class="close-btn" onclick="closeIssueModal()">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div id="modal-body">
-            </div>
-    </div>
-</div>
 </body>
 </html>
