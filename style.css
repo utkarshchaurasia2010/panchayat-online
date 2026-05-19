@@ -567,3 +567,10 @@ header h2 {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
+/* --- FIX FOR SHRUNKEN DASHBOARD CARDS ON PC --- */
+/* Forces all cards inside the dashboard to match the 500px container width */
+.container .card {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
