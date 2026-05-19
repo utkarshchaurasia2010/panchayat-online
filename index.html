@@ -126,10 +126,9 @@
                 All Issues
                 <span class="material-symbols-outlined">arrow_drop_down</span>
             </button>
-            <button class="btn outline primary" onclick="toggleAdminSection('admin-notice-section')"style="margin-top:10px;">
-                <span class="material-symbols-outlined">crisis_alert</span>
-                Notices
-            </button>
+           <button class="btn outline primary" onclick="switchView('admin-notice-view')" style="margin-top:10px;">
+            <span class="material-symbols-outlined">campaign</span> Notices
+        </button>
             <div id="generate-code-view" class="view">
         <header>
             <div style="display: flex; align-items: center; gap: 15px;">
@@ -173,8 +172,15 @@
                     <span class="material-symbols-outlined">print</span>
                     Print Issues Report
                 </button>
-                <div id="admin-notice-section" class="admin-section hidden">
-            
+                <div id="admin-notice-view" class="view">
+        <header>
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span class="material-symbols-outlined" onclick="switchView('admin-view')" style="cursor: pointer; font-size: 24px;">arrow_back</span>
+                <h2 style="margin: 0; font-size: 20px;">Manage Notices</h2>
+            </div>
+        </header>
+        
+        <div class="container">
             <div class="card" style="padding: 25px; width: 100%; box-sizing: border-box;">
                 <h3 style="margin-top: 0; margin-bottom: 20px; font-size: 20px; color: #333;">Post Official Notice</h3>
                 
@@ -188,14 +194,15 @@
                     <textarea id="notice-desc" class="form-input" rows="3" placeholder="Enter announcement details..."></textarea>
                 </div>
 
-                <button class="btn primary flex-btn" onclick="postNotice()" style="margin-top: 10px; border-radius: 12px; display: flex; justify-content: center; width: 100%;">
-                    <span class="material-symbols-outlined" style="margin-right: 8px;">campaign</span> Post Notice
+                <button class="btn primary flex-btn" onclick="postNotice()" style="margin-top: 10px; border-radius: 12px; display: flex; justify-content: center; align-items: center; width: 100%;">
+                    <span class="material-symbols-outlined" style="font-size: 20px; margin-right: 8px;">campaign</span> Post Notice
                 </button>
             </div>
             
-            <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333;">Active Notices</h3>
-            <div id="admin-notice-list"></div>
+            <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 18px; color: #333; width: 100%;">Active Notices</h3>
+            <div id="admin-notice-list" style="width: 100%;"></div>
         </div>
+    </div>
             </div>
         </div>
     </div>
